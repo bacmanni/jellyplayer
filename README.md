@@ -1,6 +1,6 @@
 ## JellyPlayer, Gnome audio player for Jellyfin
 
-![Screenshot of JellyPlayer](https://github.com/bacmanni/jellyplayer/blob/main/Screenshots/Wide.png)
+![Screenshot of JellyPlayer](Screenshots/Wide.png)
 
 My idea is to have native Gnome app for Jellyfin that is also fully supported for mobile devices. Nothing more, nothing less. So simple audio player. That means no massive edit functionality and no video playback. Main focus is on audio. My wish is to use this on my mobile Linux device at some point.
 
