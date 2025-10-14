@@ -67,7 +67,6 @@
       <None Remove="Blueprints\search_row.ui" />
       <EmbeddedResource Include="Blueprints\search_row.ui" />
       <None Remove="Resources\org.bacmanni.jellyplayer.gresource" />
-      <EmbeddedResource Include="Resources\org.bacmanni.jellyplayer.gresource" />
       <None Remove="Blueprints\login.ui" />
       <None Remove="Blueprints\account.ui" />
       <EmbeddedResource Include="Blueprints\account.ui" />

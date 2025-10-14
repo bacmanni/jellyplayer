@@ -21,8 +21,8 @@ JellyPlayer.Gnome - Gnome UI of JellyPlayer
 
 ## Thanks
 My thanks for the people who have and are working with these:
-[Gir.Core](https://github.com/gircore/gir.core)
-[SoundFlow](https://github.com/LSXPrime/SoundFlow)
+[Gir.Core](https://github.com/gircore/gir.core),
+[SoundFlow](https://github.com/LSXPrime/SoundFlow) and
 [Jellyfin](https://jellyfin.org)
  
 Also special thanks to Ruut Kiiskilä for providing the logo to JellyPlayer. Nice job!
