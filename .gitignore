@@ -5,3 +5,7 @@ JellyPlayer.Shared/bin
 JellyPlayer.Shared/obj
 JellyPlayer.Test/bin
 JellyPlayer.Test/obj
+JellyPlayer.Gnome/.DS_Store
+JellyPlayer.Shared/.DS_Store
+.DS_Store
+Deploy

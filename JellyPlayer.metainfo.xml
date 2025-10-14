@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <metadata_license>MIT</metadata_license>
+
+    <!-- Note the use of macros to automate most (but not all) content below -->
+    <id>${APP_ID}</id>
+    <name>${APP_FRIENDLY_NAME}</name>
+    <summary>${APP_SHORT_SUMMARY}</summary>
+    <url type="homepage">${PUBLISHER_LINK_URL}</url>
+    <project_license>${APP_LICENSE_ID}</project_license>
+    <content_rating type="oars-1.1" />
+
+    <developer id="PublisherId">
+        <name>${PUBLISHER_NAME}</name>
+    </developer>
+
+    <launchable type="desktop-id">${APP_ID}.desktop</launchable>
+
+    <description>
+        <!-- See AppDescription in configuration -->
+        ${APPSTREAM_DESCRIPTION_XML}
+    </description>
+
+    <!-- Freedesktop Categories -->
+    <categories>
+        <category>${PRIME_CATEGORY}</category>
+    </categories>
+
+    <keywords>
+        <keyword translate="no">Jellyfin</keyword>
+        <keyword translate="no">Gnome</keyword>
+        <keyword>audioplayer</keyword>
+        <keyword>audio</keyword>
+        <keyword>music</keyword>
+    </keywords>
+
+    <screenshots>
+        <screenshot type="default">
+            <image>https://github.com/bacmanni/jellyplayer/blob/main/Screenshots/Wide.png</image>
+            <caption>Wide mode</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://github.com/bacmanni/jellyplayer/blob/main/Screenshots/Narrow.png</image>
+            <caption>Narrow mode</caption>
+        </screenshot>
+    </screenshots>
+
+    <releases>
+        <!-- See AppChangeFile in configuration -->
+        ${APPSTREAM_CHANGELOG_XML}
+    </releases>
+</component>
