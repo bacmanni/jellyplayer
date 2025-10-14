@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="AdwPreferencesGroup" id="_root">
+        <property name="title">Server and account</property>
+        <child>
+            <object class="AdwEntryRow" id="_server">
+                <property name="title" translatable="yes">Server</property>
+                <property name="show-apply-button">true</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwEntryRow" id="_username">
+                <property name="title" translatable="yes">Username</property>
+                <property name="show-apply-button">true</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwPasswordEntryRow" id="_password">
+                <property name="title" translatable="yes">Password</property>
+                <property name="show-apply-button">true</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwSwitchRow" id="_rememberPassword">
+                <property name="title" translatable="yes">Remember password</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwComboRow" id="_collection">
+                <property name="title" translatable="yes">Collection</property>
+                <property name="sensitive">false</property>
+            </object>
+        </child>
+    </object>
+</interface>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkBox" id="_root">
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
+    <child>
+      <object class="GtkImage" id="_albumArt">
+      <property name="overflow">hidden</property>
+      <style>
+          <class name="icon-dropshadow"/>
+          <class name="album-art-small"/>
+      </style>
+        <property name="halign">1</property>
+        <property name="width-request">40</property>
+        <property name="height-request">40</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">12</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="vexpand">true</property>
+        <property name="orientation">1</property>
+        <child>
+          <object class="GtkLabel" id="_album">
+            <style>
+              <class name="heading"/>
+            </style>
+            <property name="halign">1</property>
+            <property name="valign">2</property>
+            <property name="wrap">true</property>
+            <property name="ellipsize">3</property>
+            <property name="lines">1</property>
+            <property name="margin-top">6</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="_artist">
+            <property name="halign">1</property>
+            <property name="valign">1</property>
+            <property name="wrap">true</property>
+            <property name="ellipsize">3</property>
+            <property name="lines">1</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

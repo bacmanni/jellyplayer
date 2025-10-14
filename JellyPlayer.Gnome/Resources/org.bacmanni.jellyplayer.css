@@ -1,0 +1,9 @@
+.album-art-big {
+  border-radius: 12px;
+}
+.album-art-medium {
+    border-radius: 6px;
+}
+.album-art-small {
+  border-radius: 4px;
+}

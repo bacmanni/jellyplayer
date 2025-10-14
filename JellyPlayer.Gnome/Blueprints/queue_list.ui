@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="GtkScrolledWindow" id="_root">
+        <property name="hscrollbar-policy">2</property>
+        <property name="propagate-natural-height">true</property>
+        <property name="propagate-natural-width">true</property>
+        <property name="has-frame">false</property>
+        <child>
+            <object class="AdwClamp">
+                <property name="child">
+                    <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="margin-top">24</property>
+                        <property name="margin-start">24</property>
+                        <property name="margin-end">24</property>
+                        <property name="margin-bottom">24</property>
+                        <child>
+                            <object class="GtkListBox" id="_queueList">
+                                <property name="selection-mode">none</property>
+                                <property name="activate-on-single-click">true</property>
+                                <style>
+                                    <class name="boxed-list"/>
+                                </style>
+                            </object>
+                        </child>
+                    </object>
+                </property>
+            </object>
+        </child>
+    </object>
+</interface>

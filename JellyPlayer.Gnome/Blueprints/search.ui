@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="GtkScrolledWindow" id="_root">
+        <property name="hscrollbar-policy">2</property>
+        <property name="propagate-natural-height">true</property>
+        <property name="propagate-natural-width">true</property>
+        <property name="has-frame">false</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <child>
+            <object class="GtkBox">
+                <property name="vexpand">true</property>
+                <property name="hexpand">true</property>
+                <property name="orientation">1</property>
+                <child>
+                    <object class="AdwSpinner" id="_spinner">
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="vexpand">true</property>
+                        <property name="hexpand">true</property>
+                        <property name="width-request">48</property>
+                        <property name="height-request">48</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwStatusPage" id="_noresults">
+                        <property name="icon-name">face-sad-symbolic</property>
+                        <property name="title">No results found</property>
+                        <property name="description">Try different search term</property>
+                    </object>
+                </child>
+                <child>
+                    <object class="AdwClamp" id="_results">
+                        <property name="child">
+                            <object class="GtkListBox" id="_searchList">
+                                <property name="margin-top">24</property>
+                                <property name="margin-start">24</property>
+                                <property name="margin-end">24</property>
+                                <property name="margin-bottom">24</property>
+                                <property name="selection-mode">none</property>
+                                <property name="activate-on-single-click">true</property>
+                                <style>
+                                    <class name="boxed-list"/>
+                                </style>
+                            </object>
+                        </property>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>

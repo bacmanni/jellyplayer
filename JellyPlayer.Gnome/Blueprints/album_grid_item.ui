@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkBox" id="_root">
+    <property name="margin-start">6</property>
+    <property name="margin-end">6</property>
+    <property name="margin-top">6</property>
+    <property name="margin-bottom">6</property>
+    <property name="orientation">1</property>
+    <property name="width-request">120</property>
+    <property name="height-request">90</property>
+    <child>
+      <object class="GtkImage" id="_albumArt">
+        <property name="overflow">hidden</property>
+        <style>
+          <class name="icon-dropshadow"/>
+          <class name="album-art-medium"/>
+        </style>
+        <property name="halign">3</property>
+        <property name="width-request">60</property>
+        <property name="height-request">60</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="_album">
+          <property name="margin-top">6</property>
+        <property name="halign">3</property>
+        <style>
+          <class name="heading"/>
+        </style>
+        <property name="ellipsize">3</property>
+        <property name="lines">1</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="_artist">
+        <property name="halign">3</property>
+        <property name="ellipsize">3</property>
+        <property name="lines">1</property>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="GtkBox" id="_root">
+        <property name="vexpand">true</property>
+        <property name="hexpand">true</property>
+        <property name="orientation">1</property>
+        <child>
+            <object class="AdwSpinner" id="_spinner">
+                <property name="visible">false</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="vexpand">true</property>
+                <property name="hexpand">true</property>
+                <property name="width-request">48</property>
+                <property name="height-request">48</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwNavigationSplitView" id="_playlist_view">
+                <property name="sidebar">
+                    <object class="AdwNavigationPage">
+                        <property name="title" translatable="yes">Sidebar</property>
+                        <!--<property name="child">
+                        </property>-->
+                    </object>
+                </property>
+                <property name="content">
+                    <object class="AdwNavigationPage">
+                        <property name="title" translatable="yes">Content</property>
+                        <!--<property name="child">
+                        </property>-->
+                    </object>
+                </property>
+            </object>
+        </child>
+    </object>
+</interface>

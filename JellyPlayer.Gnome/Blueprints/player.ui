@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="GtkBox" id="_root">
+        <property name="hexpand">true</property>
+        <property name="margin-end">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <child>
+            <object class="AdwBreakpointBin">
+                <property name="width-request">360</property>
+                <property name="height-request">30</property>
+                <property name="child">
+                    <object class="GtkBox">
+                        <property name="orientation">1</property>
+                        <property name="hexpand">true</property>
+                        <child><!-- TODO: Add duration selection -->
+                            <object class="GtkBox" id="_duration">
+                                <property name="visible">false</property>
+                                <child>
+                                    <object class="GtkScale"></object>
+                                </child>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="GtkBox" id="_content">
+                                <property name="hexpand">true</property>
+                                <property name="homogeneous">false</property>
+                                <child>
+                                    <object class="GtkBox" id="_container">
+                                        <property name="halign">1</property>
+                                        <property name="hexpand">true</property>
+                                        <child>
+                                            <object class="GtkImage" id="_albumArt">
+                                                <property name="overflow">hidden</property>
+                                                <style>
+                                                    <class name="icon-dropshadow"/>
+                                                    <class name="album-art-small"/>
+                                                </style>
+                                                <property name="width-request">36</property>
+                                                <property name="height-request">36</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="GtkBox">
+                                                <property name="orientation">1</property>
+                                                <property name="halign">1</property>
+                                                <property name="margin-end">24</property>
+                                                <property name="margin-start">12</property>
+                                                <child>
+                                                    <object class="GtkLabel" id="_track">
+                                                        <property name="ellipsize">3</property>
+                                                        <property name="halign">1</property>
+                                                        <style>
+                                                            <class name="title-4"/>
+                                                        </style>
+                                                    </object>
+                                                </child>
+                                                <child>
+                                                    <object class="GtkLabel" id="_artist">
+                                                        <property name="ellipsize">3</property>
+                                                        <property name="halign">1</property>
+                                                    </object>
+                                                </child>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkBox" id="_controls">
+                                        <property name="halign">2</property>
+                                        <child>
+                                            <object class="GtkButton" id="_skipBackward">
+                                                <property name="icon-name">media-skip-backward-symbolic</property>
+                                                <property name="has-frame">false</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="GtkButton" id="_play">
+                                                <property name="icon-name">media-playback-start-symbolic</property>
+                                                <property name="has-frame">false</property>
+                                            </object>
+                                        </child>
+                                        <child>
+                                            <object class="GtkButton" id="_skipForward">
+                                                <property name="icon-name">media-skip-forward-symbolic</property>
+                                                <property name="has-frame">false</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                                <child>
+                                    <object class="GtkBox" id="_actions">
+                                        <property name="halign">2</property>
+                                        <property name="hexpand">false</property>
+                                        <child>
+                                            <object class="GtkButton" id="_lyrics">
+                                                <property name="halign">2</property>
+                                                <property name="icon-name">format-justify-center-symbolic</property>
+                                                <property name="tooltip-text">Show track lyrics</property>
+                                                <property name="has-frame">false</property>
+                                                <property name="sensitive">false</property>
+                                            </object>
+                                        </child>
+                                    </object>
+                                </child>
+                            </object>
+                        </child>
+                    </object>
+                </property>
+                <child>
+                    <object class="AdwBreakpoint">
+                        <condition>min-width: 600px</condition>
+                        <setter object="_content" property="homogeneous">true</setter>
+                        <setter object="_controls" property="halign">3</setter>
+                        <setter object="_actions" property="hexpand">true</setter>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>

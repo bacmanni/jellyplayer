@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="AdwActionRow" id="_root">
+        <property name="title-lines">1</property>
+        <child type="prefix">
+            <object class="GtkImage" id="_albumArt">
+            </object>
+        </child>
+        <child type="prefix">
+            <object class="GtkImage" id="_status">
+            </object>
+        </child>
+        <child type="suffix">
+            <object class="GtkLabel" id="_runtime">
+            </object>
+        </child>
+    </object>
+</interface>

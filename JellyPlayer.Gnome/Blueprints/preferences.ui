@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<interface>
+    <object class="AdwPreferencesDialog" id="_root">
+        <property name="search-enabled">false</property>
+        <property name="can-close">false</property>
+        <property name="presentation-mode">auto</property>
+        <child>
+            <object class="AdwPreferencesPage" id="_preferencesPage1">
+                <property name="vexpand">true</property>
+                <child>
+                    <object class="AdwPreferencesGroup" id="_generalGroup">
+                        <property name="title" translatable="yes">General</property>
+                        <child>
+                            <object class="AdwSwitchRow" id="_showListSeparator">
+                                <property name="title" translatable="yes">Show list separator</property>
+                            </object>
+                        </child>
+                        <child>
+                            <object class="AdwSwitchRow" id="_useLocalMemory">
+                                <property name="title" translatable="yes">Store album art to device memory</property>
+                            </object>
+                        </child>
+                    </object>
+                </child>
+            </object>
+        </child>
+    </object>
+</interface>
