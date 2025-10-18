@@ -49,6 +49,10 @@ class Program
 
     private Program()
     {
+        //Gtk.Module.Initialize();
+        Adw.Module.Initialize();
+        Gio.Module.Initialize();
+        
         var serviceCollection = new ServiceCollection();
         ConfigureServices(_applicationInfo, serviceCollection);
         _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -67,7 +71,6 @@ class Program
         
         configurationService.Load();
         
-        Gio.Module.Initialize();
         var resourceFile = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/org.bacmanni.jellyplayer.gresource";
         Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(resourceFile));
         

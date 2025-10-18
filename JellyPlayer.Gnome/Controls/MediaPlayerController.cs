@@ -13,6 +13,7 @@ public class MediaPlayerController
     /// </summary>
     public void CreatePlayer()
     {
+        // org.mpris.MediaPlayer2.$FLATPAK_ID
         var bus = DBusConnection.Get(BusType.Session);
         using var parameters = Variant.NewTuple(new[] {
             Variant.NewString("AppName"),

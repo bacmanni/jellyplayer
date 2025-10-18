@@ -26,8 +26,4 @@
       <None Remove="Resources\org.bacmanni.jellyplayer.svg" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Resources\" />
-    </ItemGroup>
-
 </Project>

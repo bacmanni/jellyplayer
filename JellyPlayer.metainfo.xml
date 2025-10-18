@@ -10,7 +10,7 @@
     <project_license>${APP_LICENSE_ID}</project_license>
     <content_rating type="oars-1.1" />
 
-    <developer id="PublisherId">
+    <developer id="${PUBLISHER_ID}">
         <name>${PUBLISHER_NAME}</name>
     </developer>
 
@@ -36,11 +36,11 @@
 
     <screenshots>
         <screenshot type="default">
-            <image>https://github.com/bacmanni/jellyplayer/blob/main/Screenshots/Wide.png</image>
+            <image>https://raw.githubusercontent.com/bacmanni/jellyplayer/main/Screenshots/Wide.png</image>
             <caption>Wide mode</caption>
         </screenshot>
         <screenshot>
-            <image>https://github.com/bacmanni/jellyplayer/blob/main/Screenshots/Narrow.png</image>
+            <image>https://raw.githubusercontent.com/bacmanni/jellyplayer/main/Screenshots/Narrow.png</image>
             <caption>Narrow mode</caption>
         </screenshot>
     </screenshots>
