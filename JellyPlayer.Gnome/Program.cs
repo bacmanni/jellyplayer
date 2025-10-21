@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using JellyPlayer.Shared.Controls;
 using Jellyfin.Sdk;
+using JellyPlayer.Shared.Handlers;
 using JellyPlayer.Shared.Models;
 using JellyPlayer.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,8 +50,6 @@ class Program
 
     private Program()
     {
-        //Gtk.Module.Initialize();
-        Adw.Module.Initialize();
         Gio.Module.Initialize();
         
         var serviceCollection = new ServiceCollection();
@@ -118,8 +117,11 @@ class Program
             {
                 AutomaticDecompression = DecompressionMethods.All,
                 RequestHeaderEncodingSelector = (_, _) => Encoding.UTF8,
-            });
+            }).AddHttpMessageHandler<HttpClientExceptionHandler>();
 
+        // Logging
+        serviceCollection.AddTransient<HttpClientExceptionHandler>();
+        
         // Jellyfin sdk related
         serviceCollection.AddSingleton<JellyfinSdkSettings>();
         serviceCollection.AddSingleton<IAuthenticationProvider, JellyfinAuthenticationProvider>();
