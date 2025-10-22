@@ -1,9 +1,8 @@
 using Adw.Internal;
 using JellyPlayer.Gnome.Helpers;
-using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
-using JellyPlayer.Shared.Models;
 using JellyPlayer.Shared.Services;
+using AlertDialog = Adw.AlertDialog;
 
 namespace JellyPlayer.Gnome.Views;
 
@@ -65,12 +64,14 @@ public partial class PreferencesView : Adw.PreferencesDialog
         {
             var alert = new PreferencesAlert();
             alert.Present(this);
-            alert.OnResponse += (dialog, signalArgs) =>
-            {
-                if (signalArgs.Response == "close")
-                    ForceClose();
-            };
+            alert.OnResponse += AlertOnResponse;
         }
+    }
+
+    private void AlertOnResponse(AlertDialog sender, AlertDialog.ResponseSignalArgs args)
+    {
+        if (args.Response == "close")
+            ForceClose();
     }
 
     public PreferencesView(IConfigurationService configurationService, IJellyPlayerApiService jellyPlayerApiService) : this(Blueprint.BuilderFromFile("preferences"))
@@ -86,5 +87,11 @@ public partial class PreferencesView : Adw.PreferencesDialog
         _accountController.OpenConfiguration(configuration);
         _useLocalMemory.SetActive(configuration.CacheAlbumArt);
         _showListSeparator.SetActive(configuration.ShowListSeparator);
+    }
+
+    public override void Dispose()
+    {
+        OnCloseAttempt -= CloseAttempt;
+        base.Dispose();
     }
 }

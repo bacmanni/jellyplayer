@@ -1,10 +1,8 @@
-using System.Text.Encodings.Web;
-using Adw.Internal;
 using Gtk.Internal;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Shared.Controls;
-using JellyPlayer.Shared.Enums;
-using JellyPlayer.Shared.Models;
+using JellyPlayer.Shared.Events;
+using ListBox = Gtk.ListBox;
 
 namespace JellyPlayer.Gnome.Views;
 
@@ -33,52 +31,57 @@ public class AlbumView : Gtk.ScrolledWindow
     public AlbumView(AlbumController controller) : this(Blueprint.BuilderFromFile("album"))
     {
         _controller = controller;
-        _tracks.OnRowSelected += (sender, args) =>
-        {
-            if (args.Row is TrackRow row && row.GetTrackId().HasValue)
-            {
-                _controller.SelectTrack(row.GetTrackId().Value);
-            }
-        };
         
-        _tracks.OnRowActivated += (sender, args) =>
-        {
-            if (args.Row is TrackRow row && row.GetTrackId().HasValue)
-            {
-                if (_isCtrlActive)
-                {
-                    _controller.AddTrackToQueue(row.GetTrackId().Value);
-                }
-                else
-                {
-                    _controller.PlayOrPauseTrack(row.GetTrackId().Value);
-                }
-            }
-        };
-        
-        _controller.OnAlbumChanged += (sender, args) =>
-        {
-            switch (args.UpdateAlbum)
-            {
-                case false when !args.UpdateTracks && !args.UpdateArtwork && !args.UpdateTrackState:
-                    SetSpinner(true);
-                    break;
-                case true:
-                    UpdateAlbum();
-                    break;
-            }
-
-            if (args.UpdateTracks)
-                UpdateTracks();
-
-            if (args.UpdateArtwork)
-                UpdateArtwork();
-
-            if (args.UpdateTrackState)
-                UpdateTrackState(args.SelectedTrackId.Value);
-        };
+        _tracks.OnRowSelected += TracksOnRowSelected;
+        _tracks.OnRowActivated += TracksOnRowActivated;
+        _controller.OnAlbumChanged += ControllerOnAlbumChanged;
     }
-    
+
+    private void ControllerOnAlbumChanged(object? sender, AlbumStateArgs args)
+    {
+        switch (args.UpdateAlbum)
+        {
+            case false when !args.UpdateTracks && !args.UpdateArtwork && !args.UpdateTrackState:
+                SetSpinner(true);
+                break;
+            case true:
+                UpdateAlbum();
+                break;
+        }
+
+        if (args.UpdateTracks)
+            UpdateTracks();
+
+        if (args.UpdateArtwork)
+            UpdateArtwork();
+
+        if (args.UpdateTrackState)
+            UpdateTrackState(args.SelectedTrackId.Value);
+    }
+
+    private void TracksOnRowActivated(ListBox sender, ListBox.RowActivatedSignalArgs args)
+    {
+        if (args.Row is TrackRow row && row.GetTrackId().HasValue)
+        {
+            if (_isCtrlActive)
+            {
+                _controller.AddTrackToQueue(row.GetTrackId().Value);
+            }
+            else
+            {
+                _controller.PlayOrPauseTrack(row.GetTrackId().Value);
+            }
+        }
+    }
+
+    private void TracksOnRowSelected(ListBox sender, ListBox.RowSelectedSignalArgs args)
+    {
+        if (args.Row is TrackRow row && row.GetTrackId().HasValue)
+        {
+            _controller.SelectTrack(row.GetTrackId().Value);
+        }
+    }
+
     private void SetSpinner(bool show)
     {
         if (show)
@@ -152,5 +155,13 @@ public class AlbumView : Gtk.ScrolledWindow
     public void IsCtrlActive(bool active)
     {
         _isCtrlActive = active;
+    }
+
+    public override void Dispose()
+    {
+        _tracks.OnRowSelected -= TracksOnRowSelected;
+        _tracks.OnRowActivated -= TracksOnRowActivated;
+        _controller.OnAlbumChanged -= ControllerOnAlbumChanged;
+        base.Dispose();
     }
 }

@@ -4,7 +4,6 @@ using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Shared.Controls;
 using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Events;
-using JellyPlayer.Shared.Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace JellyPlayer.Gnome.Views;
@@ -346,6 +345,18 @@ public partial class MainWindow : Adw.ApplicationWindow
         _spinner.SetVisible(false);
         _album_view.SetVisible(true);
         _albumListController.RefreshAlbums();
+    }
+
+    public override void Dispose()
+    {
+        _albumController.Dispose();
+        _playerController.Dispose();
+        _albumController.Dispose();
+        _searchController.Dispose();
+        _playlistController.Dispose();
+        _startupController.Dispose();
+        _queueListController.Dispose();
+        base.Dispose();
     }
 
     /// <summary>

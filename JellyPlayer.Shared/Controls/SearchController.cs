@@ -4,7 +4,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class SearchController
+public class SearchController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -72,5 +72,10 @@ public class SearchController
         Results.AddRange(sorted);
         
         SearchStateChanged(new SearchStateArgs() { Updated = true });
+    }
+
+    public void Dispose()
+    {
+        
     }
 }

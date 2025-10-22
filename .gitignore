@@ -9,3 +9,4 @@ JellyPlayer.Gnome/.DS_Store
 JellyPlayer.Shared/.DS_Store
 .DS_Store
 Deploy
+*.user

@@ -18,6 +18,7 @@ class Program
 {
     private readonly Adw.Application _application;
     private readonly IServiceProvider _serviceProvider;
+    private readonly MainWindowController  _mainWindowController;
     private Views.MainWindow? _mainWindow;
 
     private readonly ApplicationInfo _applicationInfo = new()
@@ -73,7 +74,7 @@ class Program
         var resourceFile = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/org.bacmanni.jellyplayer.gresource";
         Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(resourceFile));
         
-        var mainWindowController = new MainWindowController(apiService, configurationService, playerService, fileService, _applicationInfo);
+        _mainWindowController = new MainWindowController(apiService, configurationService, playerService, fileService, _applicationInfo);
         
         _application = Adw.Application.New(_applicationInfo.Id, Gio.ApplicationFlags.NonUnique);
         _application.OnActivate += async (sender, args) =>
@@ -84,7 +85,7 @@ class Program
                 return;
             }
         
-            _mainWindow = new Views.MainWindow((Adw.Application) sender, mainWindowController, _application);
+            _mainWindow = new Views.MainWindow((Adw.Application) sender, _mainWindowController, _application);
             _mainWindow.StartAsync();
         };
         
@@ -93,6 +94,9 @@ class Program
 
     private void ApplicationOnOnShutdown(Gio.Application sender, EventArgs args)
     {
+        _mainWindow?.Dispose();
+        _mainWindowController.Dispose();
+        
         if (_serviceProvider is IDisposable disposable)
         {
             disposable.Dispose();

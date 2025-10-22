@@ -3,7 +3,6 @@ using Adw.Internal;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Models;
-using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Gnome.Views;
 

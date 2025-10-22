@@ -5,7 +5,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class PlaylistController
+public class PlaylistController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -43,5 +43,10 @@ public class PlaylistController
     {
         var configuration = _configurationService.Get();
         return !string.IsNullOrEmpty(configuration.PlaylistCollectionId);
+    }
+
+    public void Dispose()
+    {
+
     }
 }

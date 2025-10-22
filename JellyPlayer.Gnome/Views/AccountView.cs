@@ -1,9 +1,8 @@
-using System;
-using System.Threading.Tasks;
 using Adw.Internal;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
+using JellyPlayer.Shared.Models;
 using SwitchRow = Adw.SwitchRow;
 
 namespace JellyPlayer.Gnome.Views;
@@ -39,21 +38,7 @@ public class AccountView : Adw.PreferencesGroup
     public AccountView(AccountController controller) : this(Blueprint.BuilderFromFile("account"))
     {
         _controller = controller;
-        _controller.OnConfigurationLoaded += async (sender, configuration) =>
-        {
-            _isAccountValid = false;
-            _isServerValid = false;
-            
-            _server.SetText(configuration.ServerUrl);
-            _username.SetText(configuration.Username);
-            _password.SetText(configuration.Password);
-            _rememberPassword.SetActive(configuration.RememberPassword);
-
-            await CheckServer();
-            await CheckLogin();
-            
-            _controller.UpdateValidity(_isServerValid,  _isAccountValid, _isCollectionValid);
-        };
+        _controller.OnConfigurationLoaded += ControllerOnOnConfigurationLoaded;
 
         _serverLoading.SetVisible(false);
         _server.AddSuffix(_serverLoading);
@@ -94,6 +79,22 @@ public class AccountView : Adw.PreferencesGroup
         
         _collectionLoading.SetVisible(false);
         _collection.AddSuffix(_collectionLoading);
+    }
+
+    private async void ControllerOnOnConfigurationLoaded(object? sender, Configuration configuration)
+    {
+        _isAccountValid = false;
+        _isServerValid = false;
+            
+        _server.SetText(configuration.ServerUrl);
+        _username.SetText(configuration.Username);
+        _password.SetText(configuration.Password);
+        _rememberPassword.SetActive(configuration.RememberPassword);
+
+        await CheckServer();
+        await CheckLogin();
+            
+        _controller.UpdateValidity(_isServerValid,  _isAccountValid, _isCollectionValid);
     }
 
     private void CollectionFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)
@@ -250,5 +251,11 @@ public class AccountView : Adw.PreferencesGroup
             _collection.SetSensitive(true);
             _collectionLoading.SetVisible(false);
         }
+    }
+
+    public override void Dispose()
+    {
+        _controller.OnConfigurationLoaded -= ControllerOnOnConfigurationLoaded;
+        base.Dispose();
     }
 }

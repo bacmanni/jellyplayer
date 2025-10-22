@@ -1,12 +1,8 @@
-using Adw;
-using Adw.Internal;
-using Gtk;
 using Gtk.Internal;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Shared.Controls;
 using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Events;
-using JellyPlayer.Shared.Models;
 
 namespace JellyPlayer.Gnome.Views;
 

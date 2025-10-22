@@ -2,7 +2,7 @@ using Gtk.Internal;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
-using JellyPlayer.Shared.Models;
+using JellyPlayer.Shared.Events;
 using SignalListItemFactory = Gtk.SignalListItemFactory;
 
 namespace JellyPlayer.Gnome.Views;
@@ -33,38 +33,13 @@ public class AlbumListView : Gtk.ScrolledWindow
     public AlbumListView(AlbumListController controller) : this(Blueprint.BuilderFromFile("album_list"))
     {
         _controller = controller;
-        _controller.OnAlbumListChanged += async (sender, args) =>
-        {
-            if (args.Albums is not null)
-            {
-                _albumListItems.RemoveAll();
-                foreach (var album in args.Albums)
-                {
-                    _albumListItems.Append(new AlbumRow(album));   
-                }
-            }
-            
-            if (args.IsLoading)
-            {
-                _results.SetVisible(false);
-                _spinner.SetVisible(true);
-            }
-            else
-            {
-                _spinner.SetVisible(false);
-                _results.SetVisible(true);
-            }
-        };
+        _controller.OnAlbumListChanged += ControllerOnOnAlbumListChanged;
 
         var configuration = _controller.GetConfigurationService().Get();
         _albumList.SetShowSeparators(configuration.ShowListSeparator);
         
-        _controller.GetConfigurationService().Saved += (sender, args) =>
-        {
-            var updatedConfiguration = _controller.GetConfigurationService().Get();
-            _albumList.SetShowSeparators(updatedConfiguration.ShowListSeparator);
-        };
-        
+        _controller.GetConfigurationService().Saved += OnSaved;
+
         _albumListItems = Gio.ListStore.New(AlbumRow.GetGType());
         var selectionModel = Gtk.NoSelection.New(_albumListItems);
         
@@ -99,6 +74,35 @@ public class AlbumListView : Gtk.ScrolledWindow
                 _controller.OpenAlbum(row.Id);
             }
         };
+    }
+
+    private void OnSaved(object? sender, EventArgs e)
+    {
+        var updatedConfiguration = _controller.GetConfigurationService().Get();
+        _albumList.SetShowSeparators(updatedConfiguration.ShowListSeparator);
+    }
+
+    private async void ControllerOnOnAlbumListChanged(object? sender, AlbumListStateArgs args)
+    {
+        if (args.Albums is not null)
+        {
+            _albumListItems.RemoveAll();
+            foreach (var album in args.Albums)
+            {
+                _albumListItems.Append(new AlbumRow(album));   
+            }
+        }
+            
+        if (args.IsLoading)
+        {
+            _results.SetVisible(false);
+            _spinner.SetVisible(true);
+        }
+        else
+        {
+            _spinner.SetVisible(false);
+            _results.SetVisible(true);
+        }
     }
 
     private uint? FindIndexForAlbumId(Guid albumId)
@@ -202,5 +206,11 @@ public class AlbumListView : Gtk.ScrolledWindow
         }
 
         listItem.SetChild(new AlbumListItem(_controller.GetFileService()));
+    }
+
+    public override void Dispose()
+    {
+        _controller.OnAlbumListChanged -= ControllerOnOnAlbumListChanged;
+        base.Dispose();
     }
 }

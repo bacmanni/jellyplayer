@@ -1,10 +1,7 @@
 using Gtk.Internal;
 using JellyPlayer.Gnome.Helpers;
-using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
 using JellyPlayer.Shared.Enums;
-using JellyPlayer.Shared.Models;
-using SignalListItemFactory = Gtk.SignalListItemFactory;
 
 namespace JellyPlayer.Gnome.Views;
 

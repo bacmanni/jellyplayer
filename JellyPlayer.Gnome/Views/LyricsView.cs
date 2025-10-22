@@ -47,4 +47,10 @@ public partial class LyricsView : Adw.Dialog
         _spinner.SetVisible(false);
         _results.SetVisible(true);
     }
+
+    public override void Dispose()
+    {
+        _controller.OnLyricsUpdated -= ControllerOnOnLyricsUpdated;
+        base.Dispose();
+    }
 }

@@ -7,7 +7,7 @@ namespace JellyPlayer.Shared.Controls;
 /// <summary>
 /// This controller is shared by login
 /// </summary>
-public class StartupController
+public class StartupController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -94,5 +94,10 @@ public class StartupController
     {
         _configurationService.Set(configuration);
         _configurationService.Save();
+    }
+
+    public void Dispose()
+    {
+
     }
 }

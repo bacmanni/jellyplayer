@@ -1,8 +1,9 @@
 using Adw.Internal;
+using Gtk;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Shared.Controls;
 using JellyPlayer.Shared.Enums;
-using JellyPlayer.Shared.Models;
+using Object = GObject.Object;
 
 namespace JellyPlayer.Gnome.Views;
 
@@ -27,39 +28,49 @@ public class LoginView : Adw.Dialog
         _controller = controller;
         _taskCompletionSource  = taskCompletionSource;
         
-        _password.OnNotify += (sender, args) =>
+        _password.OnNotify += PasswordOnNotify;
+        _continue.OnClicked += ContinueOnClicked;
+    }
+
+    private async void ContinueOnClicked(Button sender, EventArgs args)
+    {
+        _continue.SetSensitive(false);
+        _password.SetSensitive(false);
+        _password.RemoveCssClass("error");
+        _passwordValue = _password.GetText().Trim();
+        var startupState = await _controller.StartAsync(_passwordValue);
+        if (startupState == StartupState.Finished)
         {
-            var text = _password.GetText().Trim();
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                if (text != _passwordValue)
-                    _password.RemoveCssClass("error");
+            _taskCompletionSource.SetResult();
+            ForceClose();
+        }
+        else
+        {
+            _password.SetSensitive(true);
+            _password.AddCssClass("error");
+        }
+    }
+
+    private void PasswordOnNotify(Object sender, NotifySignalArgs args)
+    {
+        var text = _password.GetText().Trim();
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            if (text != _passwordValue)
+                _password.RemoveCssClass("error");
                 
-                _continue.SetSensitive(true);
-            }
-            else
-            {
-                _continue.SetSensitive(false);
-            }
-        };
-        
-        _continue.OnClicked += async (sender, args) =>
+            _continue.SetSensitive(true);
+        }
+        else
         {
             _continue.SetSensitive(false);
-            _password.SetSensitive(false);
-            _password.RemoveCssClass("error");
-            _passwordValue = _password.GetText().Trim();
-            var startupState = await _controller.StartAsync(_passwordValue);
-            if (startupState == StartupState.Finished)
-            {
-                _taskCompletionSource.SetResult();
-                ForceClose();
-            }
-            else
-            {
-                _password.SetSensitive(true);
-                _password.AddCssClass("error");
-            }
-        };
+        }
+    }
+
+    public override void Dispose()
+    {
+        _password.OnNotify -= PasswordOnNotify;
+        _continue.OnClicked -= ContinueOnClicked;
+        base.Dispose();
     }
 }
