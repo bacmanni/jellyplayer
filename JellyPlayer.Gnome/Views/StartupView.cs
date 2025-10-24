@@ -68,6 +68,9 @@ public class StartupView : Adw.Dialog
             if (_accountController.CollectionId != null)
                 configuration.CollectionId = _accountController.CollectionId.ToString();
             
+            if (_accountController.PlaylistCollectionId != null)
+                configuration.PlaylistCollectionId = _accountController.PlaylistCollectionId.ToString();
+            
             _controller.SaveConfiguration(configuration);
             var state = await _controller.StartAsync();
             if (state == StartupState.Finished)

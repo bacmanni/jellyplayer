@@ -32,9 +32,9 @@ public class Configuration
     public string CollectionId { get; set; } = string.Empty;
     
     /// <summary>
-    /// Selected playlist collection
+    /// Selected playlist collection (Optional)
     /// </summary>
-    public string PlaylistCollectionId { get; set; } = string.Empty;
+    public string? PlaylistCollectionId { get; set; } = null;
 
     /// <summary>
     /// Should album art be stored on disk

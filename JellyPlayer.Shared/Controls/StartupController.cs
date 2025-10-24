@@ -64,7 +64,7 @@ public class StartupController : IDisposable
             return StartupState.AccountProblem;
         }
         
-        var collections = await _jellyPlayerApiService.GetCollectionsAsync();
+        var collections = await _jellyPlayerApiService.GetCollectionsAsync(CollectionType.Audio);
         if (collections.Count == 0)
         {
             return StartupState.MissingCollection;

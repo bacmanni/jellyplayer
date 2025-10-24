@@ -17,12 +17,17 @@ public class HttpClientExceptionHandler : DelegatingHandler
         {
             var response = await base.SendAsync(request, cancellationToken);
             if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Request failed with status code {response.StatusCode}");
                 throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
+            }
+                
 
             return response;
         }
         catch (Exception ex)
         {
+            Console.Write(ex);
             throw new ApplicationException("HTTP request failed", ex);
         }
     }

@@ -13,7 +13,7 @@
         <property name="overflow">hidden</property>
         <style>
           <class name="icon-dropshadow"/>
-          <class name="album-art-medium"/>
+          <class name="album-art-small"/>
         </style>
         <property name="halign">3</property>
         <property name="width-request">60</property>

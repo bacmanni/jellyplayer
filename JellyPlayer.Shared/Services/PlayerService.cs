@@ -80,7 +80,7 @@ public class PlayerService : IPlayerService, IDisposable
 
         if (album.HasArtwork)
         {
-            _artwork = await _jellyPlayerApiService.GetAlbumArtAsync(albumId);
+            _artwork = await _jellyPlayerApiService.GetPrimaryArtAsync(albumId);
             PlayerStateChanged(new PlayerStateArgs(PlayerState.LoadedArtwork, album, _tracks.ToList()));
         }
     }
@@ -104,7 +104,7 @@ public class PlayerService : IPlayerService, IDisposable
 
         if (album.HasArtwork)
         {
-            _artwork = await _jellyPlayerApiService.GetAlbumArtAsync(albumId);
+            _artwork = await _jellyPlayerApiService.GetPrimaryArtAsync(albumId);
             PlayerStateChanged(new PlayerStateArgs(PlayerState.LoadedArtwork, album, tracks));
         }
     }

@@ -1,3 +1,4 @@
+using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Models;
 
 namespace JellyPlayer.Shared.Services;
@@ -12,7 +13,7 @@ public interface IJellyPlayerApiService
     public Task StartPlaybackAsync(Guid trackId);
     public Task PausePlaybackAsync(Guid trackId);
     public Task<string?> GetTrackLyricsAsync(Guid trackId);
-    public Task<List<Models.Collection>> GetCollectionsAsync();
+    public Task<List<Collection>> GetCollectionsAsync(CollectionType type);
     public Task<List<Models.Album>> GetArtistsAndAlbumsAsync(int? startIndex = null,
         int? count = null);
     public Task<Models.Album> GetAlbumAsync(Guid albumId);
@@ -21,7 +22,7 @@ public interface IJellyPlayerApiService
     public Task<List<Models.Search>> SearchTrack(string value);
     public Task<List<Models.Track>> GetTracksAsync(Guid albumId);
     public Task<Models.Track> GetTrackAsync(Guid trackId);
-    public Task<byte[]?> GetAlbumArtAsync(Guid albumId);
+    public Task<byte[]?> GetPrimaryArtAsync(Guid albumId);
     public Task<Stream?> GetAudioStreamAsync(Guid trackId);
     public string? GetAudioStreamUrl(Guid trackId);
     public Task StopPlaybackAsync(Guid trackId);

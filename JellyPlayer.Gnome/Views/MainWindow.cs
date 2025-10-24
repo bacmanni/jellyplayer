@@ -36,6 +36,9 @@ public partial class MainWindow : Adw.ApplicationWindow
     private readonly PlaylistController _playlistController;
     private readonly PlaylistView _playlistView;
 
+    private readonly PlaylistTracksController _playlistTracksController;
+    private readonly PlaylistTracksView _playlistTracksView;
+    
     [Gtk.Connect] private readonly Gtk.Button _searchButton;
     [Gtk.Connect] private readonly Gtk.SearchEntry _search_field;
     
@@ -51,6 +54,7 @@ public partial class MainWindow : Adw.ApplicationWindow
     [Gtk.Connect] private readonly Adw.NavigationPage _search_albums;
     [Gtk.Connect] private readonly Adw.NavigationPage _queue_list;
     [Gtk.Connect] private readonly Adw.NavigationPage _playlist;
+    [Gtk.Connect] private readonly Adw.NavigationPage _playlist_tracks;
     
     [Gtk.Connect] private readonly Adw.NavigationView _album_view;
     [Gtk.Connect] private readonly Adw.ToolbarView _album_list_view;
@@ -58,6 +62,7 @@ public partial class MainWindow : Adw.ApplicationWindow
     [Gtk.Connect] private readonly Adw.ToolbarView _search_albums_view;
     [Gtk.Connect] private readonly Adw.ToolbarView _queue_list_view;
     [Gtk.Connect] private readonly Adw.ToolbarView _playlist_view;
+    [Gtk.Connect] private readonly Adw.ToolbarView _playlist_tracks_view;
     
     // This is stupid hack. Used for displaying shadow correctly on player
     [Gtk.Connect] private readonly Gtk.Box _main_view_footer;
@@ -65,6 +70,7 @@ public partial class MainWindow : Adw.ApplicationWindow
     [Gtk.Connect] private readonly Gtk.Box _search_albums_footer;
     [Gtk.Connect] private readonly Gtk.Box _queue_list_footer;
     [Gtk.Connect] private readonly Gtk.Box _playlist_footer;
+    [Gtk.Connect] private readonly Gtk.Box _playlist_tracks_footer;
     
     private MainWindow(Gtk.Builder builder, MainWindowController controller, Adw.Application application) : base(new Adw.Internal.ApplicationWindowHandle(builder.GetPointer("_root"), false))
     {
@@ -98,6 +104,9 @@ public partial class MainWindow : Adw.ApplicationWindow
                 
                 if (!_playlist_footer.IsVisible())
                     _playlist_footer.SetVisible(true);
+                
+                if (!_playlist_tracks_footer.IsVisible())
+                    _playlist_tracks_footer.SetVisible(true);
             }
             else if (args.State is PlayerState.None)
             {
@@ -107,6 +116,7 @@ public partial class MainWindow : Adw.ApplicationWindow
                 _search_albums_footer?.SetVisible(true);
                 _queue_list_footer?.SetVisible(false);
                 _playlist_footer?.SetVisible(false);
+                _playlist_tracks_footer?.SetVisible(false);
             }
         };
         
@@ -156,7 +166,13 @@ public partial class MainWindow : Adw.ApplicationWindow
         // Playlist
         _playlistController = new PlaylistController(_controller.GetJellyPlayerApiService(), _controller.GetConfigurationService(), _controller.GetPlayerService(), _controller.GetFileService());
         _playlistView = new PlaylistView(_playlistController);
-        _playlist.SetChild(_playlistView);
+        _playlist_view.SetContent(_playlistView);
+        _playlistController.OnPlaylistClicked += PlaylistControllerOnPlaylistClicked;
+        
+        _playlistTracksController = new PlaylistTracksController();
+        _playlistTracksView = new PlaylistTracksView(_playlistTracksController);
+        _playlist_tracks_view.SetContent(_playlistTracksView);
+        
         
         var actPlaylist = Gio.SimpleAction.New("playlist", null);
         actPlaylist.OnActivate += ActPlaylistOnActivate;
@@ -205,6 +221,16 @@ public partial class MainWindow : Adw.ApplicationWindow
         };
         
         AddController(ctrlEvent);
+    }
+
+    private void PlaylistControllerOnPlaylistClicked(object? sender, PlaylistStateArgs e)
+    {
+        var visiblePageName = _album_view.GetVisiblePage()?.Tag;
+        _album_view.Pop();
+        
+        if (visiblePageName == "_playlist_tracks") return;
+        
+        _album_view.Push(_playlist_tracks);
     }
 
     private void ActPlaylistOnActivate(SimpleAction sender, SimpleAction.ActivateSignalArgs args)

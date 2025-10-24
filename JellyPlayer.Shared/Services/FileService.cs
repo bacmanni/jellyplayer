@@ -13,7 +13,8 @@ public class FileService : IFileService
     private readonly IConfigurationService  _configurationService;
     
     // Used for caching already fetched images
-    private readonly ConcurrentDictionary<Guid, byte[]> _arwork = [];
+    private readonly ConcurrentDictionary<Guid, byte[]> _artWork = [];
+    private readonly ConcurrentDictionary<Guid, byte[]> _playlistArtwork = [];
     
     public FileService(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService)
     {
@@ -25,6 +26,8 @@ public class FileService : IFileService
     {
         if (type == FileType.AlbumArt)
             return $"{_configurationService.GetConfigurationDirectory()}cache/albums/{id.ToString()}.jpg";
+        if (type == FileType.Playlist)
+            return $"{_configurationService.GetConfigurationDirectory()}cache/playlists/{id.ToString()}.jpg";
         
         throw new NotImplementedException($"File type {type} not implemented");
     }
@@ -38,11 +41,17 @@ public class FileService : IFileService
     public async Task<byte[]?> GetFileAsync(FileType type, Guid id)
     {
         var filename = GetFilename(type, id);
-        
-        if (_arwork.ContainsKey(id))
+
+        if (type == FileType.AlbumArt && _artWork.ContainsKey(id))
         {
-            return _arwork[id];
+            return _artWork[id];
         }
+        
+        if (type == FileType.Playlist && _playlistArtwork.ContainsKey(id))
+        {
+            return _playlistArtwork[id];
+        }
+
         
         if (_configurationService.Get().CacheAlbumArt)
         {
@@ -54,22 +63,31 @@ public class FileService : IFileService
             if (File.Exists(filename))
             {
                 var fileBytes = await File.ReadAllBytesAsync(filename);
-                _arwork.TryAdd(id, fileBytes);
+                
+                if (type == FileType.AlbumArt)
+                    _artWork.TryAdd(id, fileBytes);
+                if (type == FileType.Playlist)
+                    _playlistArtwork.TryAdd(id, fileBytes);
+                
                 return fileBytes;
             }
         }
 
-        var albumArt = await _jellyPlayerApiService.GetAlbumArtAsync(id);
-        if (albumArt == null)
+        var primaryArt = await _jellyPlayerApiService.GetPrimaryArtAsync(id);
+        if (primaryArt == null)
             return null;
 
         if (_configurationService.Get().CacheAlbumArt)
         {
-            await File.WriteAllBytesAsync(filename, albumArt);
+            await File.WriteAllBytesAsync(filename, primaryArt);
         }
 
-        _arwork.TryAdd(id, albumArt);
-        return albumArt;
+        if (type == FileType.AlbumArt)
+            _artWork.TryAdd(id, primaryArt);
+        if (type == FileType.Playlist)
+            _playlistArtwork.TryAdd(id, primaryArt);
+
+        return primaryArt;
     }
 
     /// <summary>

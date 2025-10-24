@@ -149,31 +149,56 @@
                 </property>
               </object>
             </child>
-              <child>
-              <object class="AdwNavigationPage" id="_playlist">
-                  <property name="tag">_playlist</property>
-                  <property name="child">
-                      <object class="AdwToolbarView" id="_playlist_view">
-                          <property name="bottom-bar-style">raised</property>
-                          <child type="top">
-                              <object class="AdwHeaderBar">
-                                <property name="title-widget">
-                                  <object class="AdwWindowTitle">
-                                    <property name="title" translatable="yes">Playlists</property>
-                                  </object>
-                                </property>
-                              </object>
-                          </child>
-                          <child type="bottom">
-                              <object class="GtkBox" id="_playlist_footer">
-                                  <property name="visible">false</property>
-                                  <property name="height-request">1</property>
-                              </object>
-                          </child>
+            <child>
+            <object class="AdwNavigationPage" id="_playlist">
+                <property name="tag">_playlist</property>
+                <property name="child">
+                    <object class="AdwToolbarView" id="_playlist_view">
+                        <property name="bottom-bar-style">raised</property>
+                        <child type="top">
+                            <object class="AdwHeaderBar">
+                              <property name="title-widget">
+                                <object class="AdwWindowTitle">
+                                  <property name="title" translatable="yes">Playlists</property>
+                                </object>
+                              </property>
+                            </object>
+                        </child>
+                        <child type="bottom">
+                            <object class="GtkBox" id="_playlist_footer">
+                                <property name="visible">false</property>
+                                <property name="height-request">1</property>
+                            </object>
+                        </child>
+                    </object>
+                </property>
+            </object>
+            </child>
+            <child>
+              <object class="AdwNavigationPage" id="_playlist_tracks">
+                <property name="tag">_playlist_tracks</property>
+                <property name="child">
+                  <object class="AdwToolbarView" id="_playlist_tracks_view">
+                    <property name="bottom-bar-style">raised</property>
+                    <child type="top">
+                      <object class="AdwHeaderBar">
+                        <property name="title-widget">
+                          <object class="AdwWindowTitle">
+                            <property name="title" translatable="yes">Playlists</property>
+                          </object>
+                        </property>
                       </object>
-                  </property>
+                    </child>
+                    <child type="bottom">
+                      <object class="GtkBox" id="_playlist_tracks_footer">
+                        <property name="visible">false</property>
+                        <property name="height-request">1</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
               </object>
-              </child>
+            </child>
           </object>
         </child>
         <child>

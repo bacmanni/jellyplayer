@@ -26,8 +26,14 @@
             </object>
         </child>
         <child>
-            <object class="AdwComboRow" id="_collection">
-                <property name="title" translatable="yes">Collection</property>
+            <object class="AdwComboRow" id="_audioCollection">
+                <property name="title" translatable="yes">Audio collection</property>
+                <property name="sensitive">false</property>
+            </object>
+        </child>
+        <child>
+            <object class="AdwComboRow" id="_playlistCollection">
+                <property name="title" translatable="yes">Playlist collection</property>
                 <property name="sensitive">false</property>
             </object>
         </child>

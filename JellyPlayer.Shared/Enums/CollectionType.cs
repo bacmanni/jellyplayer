@@ -1,7 +1,7 @@
 namespace JellyPlayer.Shared.Enums;
 
-public enum FileType
+public enum CollectionType
 {
-    AlbumArt,
+    Audio,
     Playlist
 }

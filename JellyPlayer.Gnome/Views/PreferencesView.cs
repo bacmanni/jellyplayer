@@ -55,6 +55,7 @@ public partial class PreferencesView : Adw.PreferencesDialog
             
             configuration.RememberPassword = _accountController.RememberPassword;
             configuration.CollectionId = _accountController.CollectionId?.ToString() ?? throw new NullReferenceException("This should never happen!");
+            configuration.PlaylistCollectionId = _accountController.PlaylistCollectionId?.ToString();
             
             _configurationService.Set(configuration);
             _configurationService.Save();

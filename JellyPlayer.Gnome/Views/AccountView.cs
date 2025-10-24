@@ -1,7 +1,9 @@
 using Adw.Internal;
+using Gtk;
 using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
+using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Models;
 using SwitchRow = Adw.SwitchRow;
 
@@ -15,15 +17,20 @@ public class AccountView : Adw.PreferencesGroup
     [Gtk.Connect] private readonly Adw.EntryRow _username;
     [Gtk.Connect] private readonly Adw.PasswordEntryRow _password;
     [Gtk.Connect] private readonly Adw.SwitchRow _rememberPassword;
-    [Gtk.Connect] private readonly Adw.ComboRow _collection;
-
-    private readonly Gtk.SignalListItemFactory _collectionFactory;
-    private readonly Gio.ListStore _collectionItems;
+    [Gtk.Connect] private readonly Adw.ComboRow _audioCollection;
+    [Gtk.Connect] private readonly Adw.ComboRow _playlistCollection;
+    
+    private readonly Gtk.SignalListItemFactory _audioCollectionFactory;
+    private readonly Gio.ListStore _audioCollectionItems;
+    
+    private readonly Gtk.SignalListItemFactory _playlistCollectionFactory;
+    private readonly Gio.ListStore _playlistCollectionItems;
     
     private Adw.Spinner _serverLoading = Adw.Spinner.New();
     private Adw.Spinner _usernameLoading = Adw.Spinner.New();
     private Adw.Spinner _passwordLoading = Adw.Spinner.New();
-    private Adw.Spinner _collectionLoading = Adw.Spinner.New();
+    private Adw.Spinner _audioCollectionLoading = Adw.Spinner.New();
+    private Adw.Spinner _playlistCollectionLoading = Adw.Spinner.New();
     
     private bool _isServerValid;
     private bool _isAccountValid;
@@ -69,16 +76,55 @@ public class AccountView : Adw.PreferencesGroup
                 _controller.RememberPassword = element.GetActive();
         };
         
-        _collectionItems = Gio.ListStore.New(CollectionRow.GetGType());
-        var selectionModel = Gtk.NoSelection.New(_collectionItems);
-        _collectionFactory = Gtk.SignalListItemFactory.New();
-        _collectionFactory.OnBind += CollectionFactoryOnBind;
-        _collectionFactory.OnSetup += CollectionFactoryOnSetup;
-        _collection.SetFactory(_collectionFactory);
-        _collection.SetModel(selectionModel);
+        _audioCollectionItems = Gio.ListStore.New(CollectionRow.GetGType());
+        var audioSelectionModel = Gtk.NoSelection.New(_audioCollectionItems);
+        _audioCollectionFactory = Gtk.SignalListItemFactory.New();
+        _audioCollectionFactory.OnBind += AudioCollectionFactoryOnBind;
+        _audioCollectionFactory.OnSetup += AudioCollectionFactoryOnSetup;
+        _audioCollection.SetFactory(_audioCollectionFactory);
+        _audioCollection.SetModel(audioSelectionModel);
+        _audioCollectionLoading.SetVisible(false);
+        _audioCollection.AddSuffix(_audioCollectionLoading);
         
-        _collectionLoading.SetVisible(false);
-        _collection.AddSuffix(_collectionLoading);
+        _playlistCollectionItems = Gio.ListStore.New(CollectionRow.GetGType());
+        var playlistSelectionModel = Gtk.NoSelection.New(_playlistCollectionItems);
+        _playlistCollectionFactory = Gtk.SignalListItemFactory.New();
+        _playlistCollectionFactory.OnBind += PlaylistCollectionFactoryOnBind;
+        _playlistCollectionFactory.OnSetup += PlaylistCollectionFactoryOnSetup;
+        _playlistCollection.SetFactory(_playlistCollectionFactory);
+        _playlistCollection.SetModel(playlistSelectionModel);
+        _playlistCollectionLoading.SetVisible(false);
+        _playlistCollection.AddSuffix(_playlistCollectionLoading);
+    }
+
+    private void PlaylistCollectionFactoryOnSetup(SignalListItemFactory sender, SignalListItemFactory.SetupSignalArgs args)
+    {
+        var listItem = args.Object as Gtk.ListItem;
+        if (listItem is null)
+        {
+            return;
+        }
+
+        var label = Gtk.Label.New(null);
+        listItem.SetChild(label);
+    }
+
+    private void PlaylistCollectionFactoryOnBind(SignalListItemFactory sender, SignalListItemFactory.BindSignalArgs args)
+    {
+        var listItem = args.Object as Gtk.ListItem;
+        if (listItem is null)
+        {
+            return;
+        }
+
+        var template = listItem.Child as Gtk.Label;
+        if (template is null)
+        {
+            return;
+        }
+
+        if (listItem.Item is CollectionRow item)
+            template.SetText(item.Name);
     }
 
     private async void ControllerOnOnConfigurationLoaded(object? sender, Configuration configuration)
@@ -97,7 +143,7 @@ public class AccountView : Adw.PreferencesGroup
         _controller.UpdateValidity(_isServerValid,  _isAccountValid, _isCollectionValid);
     }
 
-    private void CollectionFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)
+    private void AudioCollectionFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)
     {
         var listItem = args.Object as Gtk.ListItem;
         if (listItem is null)
@@ -109,7 +155,7 @@ public class AccountView : Adw.PreferencesGroup
         listItem.SetChild(label);
     }
 
-    private void CollectionFactoryOnBind(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.BindSignalArgs args)
+    private void AudioCollectionFactoryOnBind(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.BindSignalArgs args)
     {
         var listItem = args.Object as Gtk.ListItem;
         if (listItem is null)
@@ -132,7 +178,7 @@ public class AccountView : Adw.PreferencesGroup
         _server.RemoveCssClass("error");
         _username.SetSensitive(false);
         _password.SetSensitive(false);
-        _collection.SetSensitive(false);
+        _audioCollection.SetSensitive(false);
             
         if (!string.IsNullOrWhiteSpace(_server.GetText()))
         {
@@ -175,7 +221,7 @@ public class AccountView : Adw.PreferencesGroup
         
         if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
         {
-            _collection.SetSensitive(false);
+            _audioCollection.SetSensitive(false);
             _isAccountValid = await _controller.IsValidAccount(username, password);
             _usernameLoading.SetVisible(false);
             _passwordLoading.SetVisible(false);
@@ -187,8 +233,9 @@ public class AccountView : Adw.PreferencesGroup
                 _controller.UpdateValidity(true,  true, false);
                 _username.RemoveCssClass("error");
                 _password.RemoveCssClass("error");
-                _collection.SetSensitive(true);
-                await UpdateCollections();
+                _audioCollection.SetSensitive(true);
+                await UpdateAudioCollections();
+                UpdatePlaylistCollections();
             }
             else
             {
@@ -203,19 +250,19 @@ public class AccountView : Adw.PreferencesGroup
         }
     }
 
-    private async Task UpdateCollections()
+    private async Task UpdateAudioCollections()
     {
-        _collection.RemoveCssClass("error");
+        _audioCollection.RemoveCssClass("error");
         _isCollectionValid = false;
         
         if (_isServerValid && _isAccountValid)
         {
-            _collectionLoading.SetVisible(true);
-            _collectionItems.RemoveAll();
+            _audioCollectionLoading.SetVisible(true);
+            _audioCollectionItems.RemoveAll();
             
             var selectedIndex = -1;
-            var collectionId = _controller.GetSelectedCollectionId();
-            var collections = await _controller.GetCollections();
+            var collectionId = _controller.GetSelectedAudioCollectionId();
+            var collections = await _controller.GetCollections(CollectionType.Audio);
             
             for (var index = 0; index < collections.Count; index++)
             {
@@ -223,36 +270,72 @@ public class AccountView : Adw.PreferencesGroup
                 if (collection.Id == collectionId)
                     selectedIndex = index;
                 
-                _collectionItems.Append(new CollectionRow(collection));
+                _audioCollectionItems.Append(new CollectionRow(collection));
             }
 
             if (selectedIndex != -1)
             {
-                _collection.SetSelected(Convert.ToUInt32(selectedIndex));
+                _audioCollection.SetSelected(Convert.ToUInt32(selectedIndex));
                 _controller.CollectionId = collectionId;
                 _controller.UpdateValidity(true, true, true);
                 _isCollectionValid = true;
             }
             else if (collections.Count > 0)
             {
-                _collection.SetSelected(0);
-                _controller.CollectionId = (_collection.GetSelectedItem() as CollectionRow)?.Id;
+                _audioCollection.SetSelected(0);
+                _controller.CollectionId = (_audioCollection.GetSelectedItem() as CollectionRow)?.Id;
                 _controller.UpdateValidity(true, true, true);
                 _isCollectionValid = true;
             }
             else
             {
-                _collection.AddCssClass("error");
+                _audioCollection.AddCssClass("error");
                 _controller.UpdateValidity(true, true, false);
                 _isCollectionValid = false;
             }
             
             _controller.UpdateValidity(_isServerValid,  _isAccountValid, _isCollectionValid);
-            _collection.SetSensitive(true);
-            _collectionLoading.SetVisible(false);
+            _audioCollection.SetSensitive(true);
+            _audioCollectionLoading.SetVisible(false);
         }
     }
 
+    private async Task UpdatePlaylistCollections()
+    {
+        if (_isServerValid && _isAccountValid)
+        {
+            _playlistCollectionLoading.SetVisible(true);
+            _playlistCollection.SetSensitive(false);
+            _playlistCollectionItems.RemoveAll();
+            
+            var selectedIndex = -1;
+            var collectionId = _controller.GetSelectedPlaylistCollectionId();
+            var collections = await _controller.GetCollections(CollectionType.Playlist);
+            for (var index = 0; index < collections.Count; index++)
+            {
+                var collection = collections[index];
+                if (collection.Id == collectionId)
+                    selectedIndex = index;
+                
+                _playlistCollectionItems.Append(new CollectionRow(collection));
+            }
+            
+            if (selectedIndex != -1)
+            {
+                _playlistCollection.SetSelected(Convert.ToUInt32(selectedIndex));
+                _controller.PlaylistCollectionId = collectionId;
+            }
+            else if (collections.Any())
+            {
+                _playlistCollection.SetSelected(0);
+                _controller.PlaylistCollectionId = (_playlistCollection.GetSelectedItem() as CollectionRow)?.Id;
+            }
+            
+            _playlistCollectionLoading.SetVisible(false);
+            _playlistCollection.SetSensitive(collections.Any());
+        }
+    }
+    
     public override void Dispose()
     {
         _controller.OnConfigurationLoaded -= ControllerOnOnConfigurationLoaded;

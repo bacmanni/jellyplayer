@@ -5,6 +5,7 @@ using Jellyfin.Sdk.Generated.Models;
 using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Models;
 using Microsoft.Kiota.Abstractions;
+using CollectionType = JellyPlayer.Shared.Enums.CollectionType;
 
 namespace JellyPlayer.Shared.Services;
 
@@ -274,21 +275,25 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
         
         return searchResults;
     }
-    
+
     /// <summary>
     /// Get all available collections
     /// </summary>
+    /// <param name="type"></param>
     /// <returns></returns>
-    public async Task<List<Models.Collection>> GetCollectionsAsync()
+    public async Task<List<Models.Collection>> GetCollectionsAsync(Enums.CollectionType type)
     {
         var collectionResult = new List<Models.Collection>();
         var queryResult = await _jellyfinApiClient.Items.GetAsync().ConfigureAwait(false);
 
         if (queryResult?.Items == null) return collectionResult;
+
+        var collectionType = type == CollectionType.Audio
+            ? BaseItemDto_CollectionType.Music
+            : BaseItemDto_CollectionType.Playlists;
         
-        foreach (var baseItem in queryResult.Items.Where(i => i.CollectionType == BaseItemDto_CollectionType.Music))
+        foreach (var baseItem in queryResult.Items.Where(i => i.CollectionType == collectionType))
         {
-            
             if (baseItem.CollectionType == null || baseItem.Id == null || baseItem.Name == null)
                 continue;
             
@@ -443,7 +448,7 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
     /// </summary>
     /// <param name="albumId"></param>
     /// <returns></returns>
-    public async Task<byte[]?> GetAlbumArtAsync(Guid albumId)
+    public async Task<byte[]?> GetPrimaryArtAsync(Guid albumId)
     {
         try
         {
@@ -580,7 +585,7 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
         var queryResult = await _jellyfinApiClient.Items.GetAsync(configuration =>
         {
             configuration.QueryParameters.ParentId = collectionId;
-            configuration.QueryParameters.Fields = [ItemFields.SortName];
+            configuration.QueryParameters.Fields = [ItemFields.SortName, ItemFields.ChildCount ];
             configuration.QueryParameters.Recursive = true;
         }).ConfigureAwait(false);
         
@@ -592,11 +597,15 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
             if (baseItem.Id == null)
                 continue;
 
+            TimeSpan? duration = baseItem.RunTimeTicks.HasValue ? TimeSpan.FromTicks(baseItem.RunTimeTicks.Value) : null;
+            
             var playlist = new Playlist()
             {
                 Id = baseItem.Id.Value,
                 Name = baseItem.Name ?? String.Empty,
-                Type = PlaylistType.Playlist
+                Duration = duration,
+                TrackCount = baseItem.ChildCount ?? 0,
+                HasArtwork = baseItem.ImageTags?.AdditionalData.ContainsKey(ImageType.Primary.ToString()) == true
             };
             
             playlistResults.Add(playlist);

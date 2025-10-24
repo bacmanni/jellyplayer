@@ -7,7 +7,7 @@
                 <property name="hexpand">true</property>
                 <property name="orientation">1</property>
                 <child>
-                    <object class="GtkLabel" id="_search_item_title">
+                    <object class="GtkLabel" id="_playlist_item_title">
                         <style>
                             <class name="heading"/>
                         </style>
@@ -17,10 +17,14 @@
                         <property name="ellipsize">3</property>
                         <property name="lines">1</property>
                         <property name="margin-top">12</property>
+                        <property name="margin-bottom">2</property>
                     </object>
                 </child>
                 <child>
-                    <object class="GtkLabel" id="_search_item_description">
+                    <object class="GtkLabel" id="_playlist_item_description">
+                        <style>
+                            <class name="dim-label"/>
+                        </style>
                         <property name="halign">1</property>
                         <property name="valign">1</property>
                         <property name="wrap">true</property>
@@ -31,7 +35,7 @@
             </object>
         </child>
         <child type="prefix">
-            <object class="GtkImage" id="_albumArt">
+            <object class="GtkImage" id="_playlist_primary_image">
                 <property name="overflow">hidden</property>
                 <style>
                     <class name="icon-dropshadow"/>

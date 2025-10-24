@@ -12,8 +12,10 @@ public class PlaylistController : IDisposable
     private readonly IPlayerService _playerService;
     private readonly IFileService _fileService;
 
-    public readonly List<Playlist> Playlists = [];
+    public IFileService GetFileService() => _fileService;
     
+    public readonly List<Playlist> Playlists = [];
+    public event EventHandler<PlaylistStateArgs> OnPlaylistClicked;
     public event EventHandler<PlaylistStateArgs> OnPlaylistStateChanged;
     
     public PlaylistController(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService, IPlayerService playerService, IFileService fileService)
@@ -30,21 +32,25 @@ public class PlaylistController : IDisposable
     /// <param name="reload"></param>
     public async Task RefreshPlaylist(bool reload = false)
     {
-        // TODO: Add default queue
         Playlists.Clear();
-        //Playlists.Add(new Playlist() { Id = Guid.NewGuid(), Name = "Queue", Type = PlaylistType.Queue });
 
-        var playlists = await _jellyPlayerApiService.GetPlaylistsAsync(Guid.Parse("a987925015a1b40709c19d10231dfb72"));
-        Playlists.AddRange(playlists);
-        OnPlaylistStateChanged.Invoke(this, new PlaylistStateArgs());
+        if (Guid.TryParse(_configurationService.Get().PlaylistCollectionId, out var playlistCollectionId))
+        {
+            var playlists = await _jellyPlayerApiService.GetPlaylistsAsync(playlistCollectionId);
+            Playlists.AddRange(playlists);
+            OnPlaylistStateChanged.Invoke(this, new PlaylistStateArgs());
+        }
     }
 
-    public bool HasPlaylistCollection()
+    /// <summary>
+    /// Open input playlist
+    /// </summary>
+    /// <param name="playlistId"></param>
+    public async Task OpenPlaylist(Guid playlistId)
     {
-        var configuration = _configurationService.Get();
-        return !string.IsNullOrEmpty(configuration.PlaylistCollectionId);
+        OnPlaylistClicked?.Invoke(this, new PlaylistStateArgs() { PlaylistId = playlistId });
     }
-
+    
     public void Dispose()
     {
 

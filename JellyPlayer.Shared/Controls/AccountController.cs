@@ -1,3 +1,4 @@
+using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Models;
 using JellyPlayer.Shared.Services;
 
@@ -15,7 +16,8 @@ public class AccountController
     public string Password { get; set; }
     public bool RememberPassword { get; set; }
     public Guid? CollectionId { get; set; }
-    
+    public Guid? PlaylistCollectionId { get; set; }
+
     public event EventHandler<Configuration> OnConfigurationLoaded;
 
     public event EventHandler<bool> OnUpdate;
@@ -61,16 +63,16 @@ public class AccountController
     /// Get available collections
     /// </summary>
     /// <returns></returns>
-    public async Task<List<Collection>> GetCollections()
+    public async Task<List<Collection>> GetCollections(CollectionType type)
     {
-        return await _jellyPlayerApiService.GetCollectionsAsync();
+        return await _jellyPlayerApiService.GetCollectionsAsync(type);
     }
 
     /// <summary>
     /// Get selected collection Id
     /// </summary>
     /// <returns></returns>
-    public Guid? GetSelectedCollectionId()
+    public Guid? GetSelectedAudioCollectionId()
     {
         var id= _configurationService.Get()?.CollectionId;
         if (!Guid.TryParse(id, out var collectionId))
@@ -91,6 +93,10 @@ public class AccountController
         Password = configuration.Password;
         RememberPassword = configuration.RememberPassword;
         CollectionId = Guid.Parse(configuration.CollectionId);
+        
+        if (configuration.PlaylistCollectionId != null)
+            PlaylistCollectionId = Guid.Parse(configuration.PlaylistCollectionId);
+        
         OnConfigurationLoaded?.Invoke(this, configuration);
     }
 
@@ -133,7 +139,23 @@ public class AccountController
         
         if (configuration.CollectionId != CollectionId?.ToString())
             return true;
-        
+
+        if (configuration.PlaylistCollectionId != PlaylistCollectionId?.ToString())
+            return true;
+            
         return false;
+    }
+
+    /// <summary>
+    /// Get selected playlist collection id
+    /// </summary>
+    /// <returns></returns>
+    public Guid? GetSelectedPlaylistCollectionId()
+    {
+        var id= _configurationService.Get().PlaylistCollectionId;
+        if (!Guid.TryParse(id, out var collectionId))
+            return null;
+        
+        return collectionId;
     }
 }
