@@ -14,8 +14,6 @@ public class SearchRow : Adw.ActionRow
     public SearchType Type { get; set; }
     
     [Gtk.Connect] private readonly Gtk.Image _albumArt;
-    [Gtk.Connect] private readonly Gtk.Label _search_item_title;
-    [Gtk.Connect] private readonly Gtk.Label _search_item_description;
 
     private SearchRow(Gtk.Builder builder) : base(
         new ActionRowHandle(builder.GetPointer("_root"), false))
@@ -34,10 +32,10 @@ public class SearchRow : Adw.ActionRow
         switch (row.Type)
         {
             case SearchType.Album or SearchType.Artist:
-                _search_item_title.SetLabel(row.AlbumName);
+                SetTitle(row.AlbumName);
                 break;
             default:
-                _search_item_title.SetLabel(row.TrackName);
+                SetTitle(row.TrackName);
                 break;
         }
         
@@ -45,7 +43,7 @@ public class SearchRow : Adw.ActionRow
         if (row.Type == SearchType.Track)
             description += $" on {row.AlbumName}";
         
-        _search_item_description.SetLabel(description);
+        SetSubtitle(description);
         
         if (!row.HasArtwork)
             return;

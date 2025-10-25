@@ -130,8 +130,7 @@ public class AlbumView : Gtk.ScrolledWindow
         foreach (var track in _controller.Tracks)
         {
             var state = _controller.GetPlayerService().GetTrackState(track.Id);
-            var index = _controller.GetPlayerService().GetQueuePosition(track.Id);
-            var row = new TrackRow(track, state, index);
+            var row = new TrackRow(track, state);
             _tracks.Append(row);
         }
     }
@@ -145,10 +144,7 @@ public class AlbumView : Gtk.ScrolledWindow
 
             var rowTrackId = row.GetTrackId() ?? throw new NullReferenceException();
             var state = _controller.GetPlayerService().GetTrackState(rowTrackId);
-            var index = _controller.GetPlayerService().GetQueuePosition(rowTrackId);
-            
             row.UpdateState(state);
-            row.UpdateIndex(index);
         }
     }
 

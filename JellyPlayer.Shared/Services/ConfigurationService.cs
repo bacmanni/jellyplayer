@@ -19,7 +19,6 @@ public class ConfigurationService : IConfigurationService
     /// Occurs when the configuration object is loaded
     /// </summary>
     public event EventHandler<EventArgs>? Loaded;
-
     
     /// <summary>
     /// Saves the configuration file
@@ -57,6 +56,9 @@ public class ConfigurationService : IConfigurationService
             }
         }
 
+        if (string.IsNullOrWhiteSpace(_configuration.DeviceId))
+            _configuration.DeviceId = Guid.NewGuid().ToString();
+        
         Loaded?.Invoke(this, EventArgs.Empty);
     }
 

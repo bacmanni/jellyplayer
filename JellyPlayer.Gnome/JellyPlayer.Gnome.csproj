@@ -78,6 +78,8 @@
       <EmbeddedResource Include="Blueprints\playlist_row.ui" />
       <None Remove="Blueprints\playlist_tracks.ui" />
       <EmbeddedResource Include="Blueprints\playlist_tracks.ui" />
+      <None Remove="Blueprints\playlist_tracks_row.ui" />
+      <EmbeddedResource Include="Blueprints\playlist_tracks_row.ui" />
     </ItemGroup>
 
     <ItemGroup>

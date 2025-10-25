@@ -49,20 +49,16 @@ public class QueueListController : IDisposable
     /// </summary>
     public void ShuffleTracks()
     {
-        var rnd = new Random();
-        var tracks = Tracks.OrderBy(item => rnd.Next()).ToList();
-        
-        //Tracks.Clear();
-        //Tracks.AddRange(tracks);
-    }
-    
-    public void PlayTrack(Track track)
-    {
-        _playerService.PlayTrack(track);
+        _playerService.ShuffleTracks();
+        Open();
     }
 
-    public void RemoveTrack(Track track)
+    /// <summary>
+    /// Clear current queue
+    /// </summary>
+    public void ClearTracks()
     {
-        _playerService.RemoveTrack(track);
+        _playerService.ClearTracks();
+        Open();
     }
 }

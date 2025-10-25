@@ -402,6 +402,7 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
                 Number = baseItem.IndexNumber.Value,
                 Name = baseItem.Name,
                 Artist = baseItem.AlbumArtist ?? string.Empty,
+                Album = baseItem.Album ?? string.Empty,
                 RunTime = baseItem.RunTimeTicks.HasValue ? TimeSpan.FromTicks(baseItem.RunTimeTicks.Value) : null,
                 AlbumId = baseItem.AlbumId.Value,
                 HasArtwork = !string.IsNullOrWhiteSpace(baseItem.AlbumPrimaryImageTag),
@@ -434,6 +435,7 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
             Number = baseItem.IndexNumber.Value,
             Name = baseItem.Name,
             Artist = baseItem.AlbumArtist ?? string.Empty,
+            Album = baseItem.Album ?? string.Empty,
             RunTime = baseItem.RunTimeTicks.HasValue ? TimeSpan.FromTicks(baseItem.RunTimeTicks.Value) : null,
             AlbumId = baseItem.AlbumId.Value,
             HasArtwork = !string.IsNullOrWhiteSpace(baseItem.AlbumPrimaryImageTag),
@@ -501,6 +503,67 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
     public async Task<Stream?> GetAudioStreamAsync(Guid trackId)
     {
         return await _jellyfinApiClient.Items[trackId].Download.GetAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Get single playlist
+    /// </summary>
+    /// <param name="playlistId"></param>
+    /// <returns></returns>
+    public async Task<Playlist> GetPlaylistAsync(Guid playlistId)
+    {
+        var baseItem = await _jellyfinApiClient.Items[playlistId].GetAsync();
+        TimeSpan? duration = baseItem.RunTimeTicks.HasValue ? TimeSpan.FromTicks(baseItem.RunTimeTicks.Value) : null;
+        
+        var playlist = new Playlist()
+        {
+            Id = baseItem.Id.Value,
+            Name = baseItem.Name ?? string.Empty,
+            Duration = duration,
+            TrackCount = baseItem.ChildCount ?? 0,
+            HasArtwork = baseItem.ImageTags?.AdditionalData.ContainsKey(ImageType.Primary.ToString()) == true
+        };
+        
+        return playlist;
+    }
+
+    /// <summary>
+    /// Get available tracks from playlist
+    /// </summary>
+    /// <param name="playlistId"></param>
+    /// <returns></returns>
+    public async Task<List<Track>> GetPlaylistTracksAsync(Guid playlistId)
+    {
+        var trackResult = new List<Track>();
+
+        var queryResult = await _jellyfinApiClient.Playlists[playlistId].Items.GetAsync(configuration =>
+        {
+            configuration.QueryParameters.Fields = [ItemFields.SortName];
+        }).ConfigureAwait(false);
+
+        if (queryResult?.Items == null)
+            return trackResult;
+        
+        foreach (var baseItem in queryResult.Items)
+        {
+            if (baseItem.Id == null || baseItem.Name == null && !baseItem.IndexNumber.HasValue || !baseItem.AlbumId.HasValue)
+                continue;
+
+            trackResult.Add(new Models.Track()
+            {
+                Id = baseItem.Id.GetValueOrDefault(),
+                Number = baseItem.IndexNumber.Value,
+                Name = baseItem.Name,
+                Artist = baseItem.AlbumArtist ?? string.Empty,
+                Album = baseItem.Album ?? string.Empty,
+                RunTime = baseItem.RunTimeTicks.HasValue ? TimeSpan.FromTicks(baseItem.RunTimeTicks.Value) : null,
+                AlbumId = baseItem.AlbumId.Value,
+                HasArtwork = !string.IsNullOrWhiteSpace(baseItem.AlbumPrimaryImageTag),
+                HasLyrics = baseItem.HasLyrics ?? false,
+            });
+        }
+        
+        return trackResult;
     }
 
     /// <summary>
@@ -602,7 +665,7 @@ public class JellyPlayerApiService : IJellyPlayerApiService, IDisposable
             var playlist = new Playlist()
             {
                 Id = baseItem.Id.Value,
-                Name = baseItem.Name ?? String.Empty,
+                Name = baseItem.Name ?? string.Empty,
                 Duration = duration,
                 TrackCount = baseItem.ChildCount ?? 0,
                 HasArtwork = baseItem.ImageTags?.AdditionalData.ContainsKey(ImageType.Primary.ToString()) == true

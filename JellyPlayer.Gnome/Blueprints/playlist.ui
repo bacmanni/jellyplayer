@@ -23,6 +23,14 @@
                     </object>
                 </child>
                 <child>
+                    <object class="AdwStatusPage" id="_noPlaylistCollection">
+                        <property name="visible">false</property>
+                        <property name="icon-name">dialog-question-symbolic</property>
+                        <property name="title">No playlist collection</property>
+                        <property name="description">Go to preferences and set your playlist collection</property>
+                    </object>
+                </child>
+                <child>
                     <object class="AdwClamp" id="_results">
                         <property name="child">
                             <object class="GtkListBox" id="_playlistList">

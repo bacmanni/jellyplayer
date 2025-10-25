@@ -1,0 +1,83 @@
+using System.Text.Encodings.Web;
+using Adw.Internal;
+using JellyPlayer.Gnome.Helpers;
+using JellyPlayer.Shared.Enums;
+using JellyPlayer.Shared.Models;
+using JellyPlayer.Shared.Services;
+
+namespace JellyPlayer.Gnome.Views;
+
+public class PlaylistTracksRow : Adw.ActionRow
+{
+    private readonly IFileService _fileService;
+    private readonly Track  _track;
+    
+    [Gtk.Connect] private readonly Gtk.Image _albumArt;
+
+    public Guid TrackId => _track.Id;
+    
+    private PlaylistTracksRow(Gtk.Builder builder) : base(
+        new ActionRowHandle(builder.GetPointer("_root"), false))
+    {
+        builder.Connect(this);
+    }
+
+    public PlaylistTracksRow(IFileService fileService, Track track, PlayerState state) : this(
+        Blueprint.BuilderFromFile("playlist_tracks_row"))
+    {
+        _track = track;
+        _fileService = fileService;
+        Activatable = true;
+
+        SetSubtitle(_track.Artist);
+        UpdateState(state);
+
+        if (_track.HasArtwork)
+            UpdateArtwork();
+    }
+    
+    private async Task UpdateArtwork()
+    {
+        var albumArt = await _fileService.GetFileAsync(FileType.AlbumArt, _track.AlbumId);
+        if  (albumArt == null || albumArt.Length == 0)
+            return;
+        
+        using var bytes = GLib.Bytes.New(albumArt);
+        using var texture = Gdk.Texture.NewFromBytes(bytes);
+        _albumArt.SetFromPaintable(texture);
+    }
+    
+    public void UpdateState(PlayerState state)
+    {
+        switch (state)
+        {
+            case PlayerState.Playing:
+                StartTrack();
+                break;
+            case PlayerState.Paused:
+                StopTrack();
+                break;
+            default:
+                ClearTrack();
+                break;
+        }
+    }
+    
+    private void StartTrack()
+    {
+        _albumArt.SetFromIconName("media-playback-start-symbolic");
+        SetTitle($"<b>{HtmlEncoder.Default.Encode(_track.Name)}</b>");
+    }
+
+    private void ClearTrack()
+    {
+        _albumArt.SetFromIconName(null);
+        SetTitle(HtmlEncoder.Default.Encode(_track.Name));
+    }
+
+    private void StopTrack()
+    {
+        _albumArt.SetFromIconName("media-playback-pause-symbolic");
+        SetTitle($"<b>{HtmlEncoder.Default.Encode(_track.Name)}</b>");
+    }
+}

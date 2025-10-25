@@ -17,7 +17,7 @@
                         </child>
                         <child>
                             <object class="AdwSwitchRow" id="_useLocalMemory">
-                                <property name="title" translatable="yes">Store album art to device memory</property>
+                                <property name="title" translatable="yes">Store artwork to device memory</property>
                             </object>
                         </child>
                     </object>

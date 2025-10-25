@@ -13,6 +13,8 @@ public class PlaylistView : Gtk.Box
     [Gtk.Connect] private readonly Adw.Spinner _spinner;
     [Gtk.Connect] private readonly Adw.Clamp _results;
     [Gtk.Connect] private readonly Gtk.ListBox _playlistList;
+    [Gtk.Connect] private readonly Adw.StatusPage _noPlaylistCollection;
+    
     
     private PlaylistView(Gtk.Builder builder) : base(
         new BoxHandle(builder.GetPointer("_root"), false))
@@ -42,16 +44,33 @@ public class PlaylistView : Gtk.Box
     private void ControllerOnPlaylistStateChanged(object? sender, PlaylistStateArgs e)
     {
         _playlistList.RemoveAll();
-        
-        foreach (var playlist in _controller.Playlists)
+
+        if (e.Loading)
         {
-            _playlistList.Append(new PlaylistRow(_controller.GetFileService(), playlist));
+            _results.SetVisible(false);
+            _noPlaylistCollection.SetVisible(false);
+            _spinner.SetVisible(true);
+            return;
         }
         
-        _spinner.SetVisible(false);
-        _results.SetVisible(true);
+        if (e.PlaylistId.HasValue)
+        {
+            foreach (var playlist in _controller.Playlists)
+            {
+                _playlistList.Append(new PlaylistRow(_controller.GetFileService(), playlist));
+            }
+        
+            _spinner.SetVisible(false);
+            _results.SetVisible(true);
+        }
+        else
+        {
+            _spinner.SetVisible(false);
+            _results.SetVisible(false);
+            _noPlaylistCollection.SetVisible(true);
+        }
     }
-
+    
     public override void Dispose()
     {
         _controller.OnPlaylistStateChanged -= ControllerOnPlaylistStateChanged;

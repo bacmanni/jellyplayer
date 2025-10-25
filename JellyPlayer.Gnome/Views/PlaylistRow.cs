@@ -9,13 +9,12 @@ namespace JellyPlayer.Gnome.Views;
 public partial class PlaylistRow : Adw.ActionRow
 {
     private readonly IFileService _fileService;
+    private readonly Playlist  _playlist;
     
     [Gtk.Connect] private readonly Gtk.Image _playlist_primary_image;
     [Gtk.Connect] private readonly Gtk.Label _playlist_item_title;
     [Gtk.Connect] private readonly Gtk.Label _playlist_item_description;
     
-    private readonly Playlist  _playlist;
-
     public readonly Guid PlaylistId;
     
     private PlaylistRow(Gtk.Builder builder) : base(
@@ -29,6 +28,8 @@ public partial class PlaylistRow : Adw.ActionRow
         _playlist  = playlist;
         _fileService = fileService;
         PlaylistId = playlist.Id;
+        
+        Activatable = true;
         
         _playlist_item_title.SetText(_playlist.Name);
 

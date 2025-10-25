@@ -261,14 +261,34 @@ public class PlayerService : IPlayerService, IDisposable
     }
 
     /// <summary>
-    /// Check if playlist contains tracks
+    /// Shuffle queue
     /// </summary>
-    /// <returns></returns>
-    public bool HasTracks()
+    public void ShuffleTracks()
     {
-        return _tracks.Any();
+        var tracks = _tracks.ToArray();
+        Random.Shared.Shuffle(tracks);
+        _tracks.Clear();
+        AddTracksFromPlaylist(tracks.ToList());
     }
 
+    /// <summary>
+    /// Check if playlist contains tracks
+    /// </summary>
+    /// <param name="countSelected">Default for checking if there are any tracks</param>
+    /// <returns></returns>
+    public bool HasTracks(bool countSelected = true)
+    {
+        if (countSelected)
+        {
+            return _tracks.Any();
+        }
+
+        if (_tracks.Count == 1)
+            return _tracks.First().Id != _selectedTrack?.Id;
+        else
+            return true;
+    }
+    
     /// <summary>
     /// Select next track from album tracks
     /// </summary>
@@ -385,8 +405,9 @@ public class PlayerService : IPlayerService, IDisposable
     /// <summary>
     /// Add more tracks to play queue
     /// </summary>
+    /// <param name="playlistId"></param>
     /// <param name="tracks"></param>
-    public void AddTracks(List<Track> tracks)
+    public void AddTracksFromPlaylist(List<Track> tracks)
     {
         foreach (var track in tracks)
             _tracks.Add(track);
@@ -398,6 +419,11 @@ public class PlayerService : IPlayerService, IDisposable
     public void ClearTracks()
     {
         _tracks.Clear();
+
+        if (_playingTrack != null)
+            _tracks.Add(_playingTrack);
+        else if (_selectedTrack != null)
+            _tracks.Add(_selectedTrack);
     }
 
     /// <summary>

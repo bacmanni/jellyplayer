@@ -57,19 +57,19 @@ class Program
         ConfigureServices(_applicationInfo, serviceCollection);
         _serviceProvider = serviceCollection.BuildServiceProvider();
         
-        var sdkClientSettings = _serviceProvider.GetRequiredService<JellyfinSdkSettings>();
-        sdkClientSettings.Initialize(
-            _applicationInfo.Name,
-            _applicationInfo.Version,
-            "JellyPlayer Gnome",
-            $"jellyplayer-{Guid.NewGuid():N}");
-        
         var apiService = _serviceProvider.GetService<IJellyPlayerApiService>();
         var playerService = _serviceProvider.GetService<IPlayerService>();
         var fileService = _serviceProvider.GetService<IFileService>();
         var configurationService = _serviceProvider.GetService<IConfigurationService>();
         
         configurationService.Load();
+        
+        var sdkClientSettings = _serviceProvider.GetRequiredService<JellyfinSdkSettings>();
+        sdkClientSettings.Initialize(
+            _applicationInfo.Name,
+            _applicationInfo.Version,
+            "JellyPlayer Gnome",
+            $"jellyplayer-{configurationService.Get().DeviceId}");
         
         var resourceFile = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/org.bacmanni.jellyplayer.gresource";
         Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(resourceFile));

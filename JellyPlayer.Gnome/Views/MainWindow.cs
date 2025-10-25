@@ -72,6 +72,8 @@ public partial class MainWindow : Adw.ApplicationWindow
     [Gtk.Connect] private readonly Gtk.Box _playlist_footer;
     [Gtk.Connect] private readonly Gtk.Box _playlist_tracks_footer;
     
+    [Gtk.Connect] private readonly Gtk.Button _queue_list_shuffle;
+
     private MainWindow(Gtk.Builder builder, MainWindowController controller, Adw.Application application) : base(new Adw.Internal.ApplicationWindowHandle(builder.GetPointer("_root"), false))
     {
         //Window Settings
@@ -82,6 +84,11 @@ public partial class MainWindow : Adw.ApplicationWindow
         
         //Build UI
         builder.Connect(this);
+
+        _queue_list_shuffle.OnClicked += (sender, args) =>
+        {
+            _queueListController.ShuffleTracks();
+        };
 
         _controller.GetPlayerService().OnPlayerStateChanged += (sender, args) =>
         {
@@ -169,16 +176,14 @@ public partial class MainWindow : Adw.ApplicationWindow
         _playlist_view.SetContent(_playlistView);
         _playlistController.OnPlaylistClicked += PlaylistControllerOnPlaylistClicked;
         
-        _playlistTracksController = new PlaylistTracksController();
+        _playlistTracksController = new PlaylistTracksController(_controller.GetJellyPlayerApiService(), _controller.GetConfigurationService(), _controller.GetPlayerService(), _controller.GetFileService());
         _playlistTracksView = new PlaylistTracksView(_playlistTracksController);
         _playlist_tracks_view.SetContent(_playlistTracksView);
-        
         
         var actPlaylist = Gio.SimpleAction.New("playlist", null);
         actPlaylist.OnActivate += ActPlaylistOnActivate;
         AddAction(actPlaylist);
-        application.SetAccelsForAction("win.playlist", new string[] { "<Ctrl>p" });
-        
+
         //Refresh application
         var actRefresh = Gio.SimpleAction.New("refresh", null);
         actRefresh.OnActivate += ActRefreshOnActivate;
@@ -189,14 +194,13 @@ public partial class MainWindow : Adw.ApplicationWindow
         var actPreferences = Gio.SimpleAction.New("preferences", null);
         actPreferences.OnActivate += ActPreferencesOnOnActivate;
         AddAction(actPreferences);
-        application.SetAccelsForAction("win.preferences", new string[] { "<Ctrl>comma" });
         
         //About Action
         var actAbout = Gio.SimpleAction.New("about", null);
         actAbout.OnActivate += ActAboutOnOnActivate;
         AddAction(actAbout);
 
-        // Set search visible/hidden
+        //Search
         var actSearchBar = Gio.SimpleAction.New("search", null);
         actSearchBar.OnActivate += ActShowSearchBarOnOnActivate;
         AddAction(actSearchBar);
@@ -226,10 +230,12 @@ public partial class MainWindow : Adw.ApplicationWindow
     private void PlaylistControllerOnPlaylistClicked(object? sender, PlaylistStateArgs e)
     {
         var visiblePageName = _album_view.GetVisiblePage()?.Tag;
-        _album_view.Pop();
+        if (visiblePageName != "_playlist")
+            _album_view.Pop();
         
         if (visiblePageName == "_playlist_tracks") return;
-        
+
+        _playlistTracksController.OpenPlaylist(e.PlaylistId.Value);
         _album_view.Push(_playlist_tracks);
     }
 

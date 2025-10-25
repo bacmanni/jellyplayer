@@ -32,12 +32,17 @@ public class PlaylistController : IDisposable
     /// <param name="reload"></param>
     public async Task RefreshPlaylist(bool reload = false)
     {
+        OnPlaylistStateChanged.Invoke(this, new PlaylistStateArgs() { Loading = true });
         Playlists.Clear();
 
         if (Guid.TryParse(_configurationService.Get().PlaylistCollectionId, out var playlistCollectionId))
         {
             var playlists = await _jellyPlayerApiService.GetPlaylistsAsync(playlistCollectionId);
             Playlists.AddRange(playlists);
+            OnPlaylistStateChanged.Invoke(this, new PlaylistStateArgs() { PlaylistId = playlistCollectionId });
+        }
+        else
+        {
             OnPlaylistStateChanged.Invoke(this, new PlaylistStateArgs());
         }
     }
@@ -46,7 +51,7 @@ public class PlaylistController : IDisposable
     /// Open input playlist
     /// </summary>
     /// <param name="playlistId"></param>
-    public async Task OpenPlaylist(Guid playlistId)
+    public void OpenPlaylist(Guid playlistId)
     {
         OnPlaylistClicked?.Invoke(this, new PlaylistStateArgs() { PlaylistId = playlistId });
     }

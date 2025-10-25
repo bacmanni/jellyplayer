@@ -7,6 +7,11 @@ namespace JellyPlayer.Shared.Models;
 public class Configuration
 {
     /// <summary>
+    /// Generated device id. Generated when configuration is created
+    /// </summary>
+    public string DeviceId { get; set; } = string.Empty;
+    
+    /// <summary>
     /// Server to be used
     /// </summary>
     public string ServerUrl { get; set; } = string.Empty;

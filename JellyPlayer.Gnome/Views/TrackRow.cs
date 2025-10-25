@@ -23,7 +23,7 @@ public partial class TrackRow : Adw.ActionRow
         builder.Connect(this);
     }
     
-    public TrackRow(Track track, PlayerState state, int? index) : this(Blueprint.BuilderFromFile("track_row"))
+    public TrackRow(Track track, PlayerState state) : this(Blueprint.BuilderFromFile("track_row"))
     {
         _track = track;
         
@@ -36,25 +36,8 @@ public partial class TrackRow : Adw.ActionRow
             _runtime.SetText(_track.RunTime.Value.ToString("m\\:ss"));
         
         UpdateState(state);
-        UpdateIndex(index);
     }
 
-    public void UpdateIndex(int? index)
-    {
-        return;
-        
-        
-        if (index.HasValue)
-        {
-            _queue.SetLabel(index.Value.ToString());
-            _queue.SetVisible(true);
-        }
-        else
-        {
-            _queue.SetVisible(false);
-        }
-    }
-    
     public void UpdateState(PlayerState state)
     {
         switch (state)

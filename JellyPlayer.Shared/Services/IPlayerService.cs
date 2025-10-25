@@ -15,7 +15,8 @@ public interface IPlayerService
     public void PauseTrack();
     public bool IsPlaying();
     public bool IsPaused();
-    public bool HasTracks();
+    public void ShuffleTracks();
+    public bool HasTracks(bool countSelected = true);
     public Task NextTrack();
     public Task PreviousTrack();
     public Guid? GetSelectedTrackId();
@@ -26,7 +27,7 @@ public interface IPlayerService
     public List<Track> GetTracks();
     public void AddTrack(Track track);
     public int? GetQueuePosition(Guid trackId);
-    public void AddTracks(List<Track> tracks);
+    public void AddTracksFromPlaylist(List<Track> tracks);
     public void ClearTracks();
     void PlayTrack(Track track);
     void RemoveTrack(Track track);

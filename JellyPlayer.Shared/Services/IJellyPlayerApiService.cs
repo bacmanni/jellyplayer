@@ -24,6 +24,8 @@ public interface IJellyPlayerApiService
     public Task<Models.Track> GetTrackAsync(Guid trackId);
     public Task<byte[]?> GetPrimaryArtAsync(Guid albumId);
     public Task<Stream?> GetAudioStreamAsync(Guid trackId);
+    public Task<Playlist> GetPlaylistAsync(Guid playlistId);
+    public Task<List<Track>> GetPlaylistTracksAsync(Guid playlistId);
     public string? GetAudioStreamUrl(Guid trackId);
     public Task StopPlaybackAsync(Guid trackId);
     public Task ResumePlaybackAsync(Guid trackId);

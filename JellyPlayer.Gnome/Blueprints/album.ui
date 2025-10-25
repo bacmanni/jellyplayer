@@ -83,14 +83,23 @@
                                                         <property name="spacing">12</property>
                                                         <child>
                                                             <object class="GtkLabel" id="_trackCount">
+                                                                <style>
+                                                                    <class name="dimmed"/>
+                                                                </style>
                                                             </object>
                                                         </child>
                                                         <child>
                                                             <object class="GtkLabel" id="_albumDuration">
+                                                                <style>
+                                                                    <class name="dimmed"/>
+                                                                </style>
                                                             </object>
                                                         </child>
                                                         <child>
                                                             <object class="GtkLabel" id="_albumYear">
+                                                                <style>
+                                                                    <class name="dimmed"/>
+                                                                </style>
                                                             </object>
                                                         </child>
                                                     </object>
