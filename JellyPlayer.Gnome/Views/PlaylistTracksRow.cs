@@ -13,7 +13,8 @@ public class PlaylistTracksRow : Adw.ActionRow
     private readonly Track  _track;
     
     [Gtk.Connect] private readonly Gtk.Image _albumArt;
-
+    [Gtk.Connect] private readonly Gtk.Label _duration;
+    
     public Guid TrackId => _track.Id;
     
     private PlaylistTracksRow(Gtk.Builder builder) : base(
@@ -29,8 +30,11 @@ public class PlaylistTracksRow : Adw.ActionRow
         _fileService = fileService;
         Activatable = true;
 
+        SetTitle(_track.Name);
         SetSubtitle(_track.Artist);
-        UpdateState(state);
+        
+        if (_track.RunTime.HasValue)
+            _duration.SetText(_track.RunTime.Value.ToString("m\\:ss"));
 
         if (_track.HasArtwork)
             UpdateArtwork();
@@ -45,39 +49,5 @@ public class PlaylistTracksRow : Adw.ActionRow
         using var bytes = GLib.Bytes.New(albumArt);
         using var texture = Gdk.Texture.NewFromBytes(bytes);
         _albumArt.SetFromPaintable(texture);
-    }
-    
-    public void UpdateState(PlayerState state)
-    {
-        switch (state)
-        {
-            case PlayerState.Playing:
-                StartTrack();
-                break;
-            case PlayerState.Paused:
-                StopTrack();
-                break;
-            default:
-                ClearTrack();
-                break;
-        }
-    }
-    
-    private void StartTrack()
-    {
-        _albumArt.SetFromIconName("media-playback-start-symbolic");
-        SetTitle($"<b>{HtmlEncoder.Default.Encode(_track.Name)}</b>");
-    }
-
-    private void ClearTrack()
-    {
-        _albumArt.SetFromIconName(null);
-        SetTitle(HtmlEncoder.Default.Encode(_track.Name));
-    }
-
-    private void StopTrack()
-    {
-        _albumArt.SetFromIconName("media-playback-pause-symbolic");
-        SetTitle($"<b>{HtmlEncoder.Default.Encode(_track.Name)}</b>");
     }
 }

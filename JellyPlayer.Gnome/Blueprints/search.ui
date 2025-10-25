@@ -13,6 +13,13 @@
                 <property name="hexpand">true</property>
                 <property name="orientation">1</property>
                 <child>
+                    <object class="AdwStatusPage" id="_startup">
+                        <property name="icon-name">system-search-symbolic</property>
+                        <property name="title">Start searching</property>
+                        <property name="description">Type something to start searching</property>
+                    </object>
+                </child>
+                <child>
                     <object class="AdwSpinner" id="_spinner">
                         <property name="halign">center</property>
                         <property name="valign">center</property>

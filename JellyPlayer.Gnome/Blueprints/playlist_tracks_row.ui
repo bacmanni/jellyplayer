@@ -15,5 +15,9 @@
                 <property name="margin-end">8</property>
             </object>
         </child>
+        <child type="suffix">
+            <object class="GtkLabel" id="_duration">
+            </object>
+        </child>
     </object>
 </interface>

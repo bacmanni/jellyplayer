@@ -13,7 +13,8 @@ public class SearchView : Gtk.ScrolledWindow
     [Gtk.Connect] private readonly Adw.StatusPage _noresults;
     [Gtk.Connect] private readonly Adw.Clamp _results;
     [Gtk.Connect] private readonly Gtk.ListBox _searchList;
-
+    [Gtk.Connect] private readonly Adw.StatusPage _startup;
+    
     private readonly Gio.ListStore _searchListItems;
     
     private SearchView(Gtk.Builder builder) : base(
@@ -26,12 +27,15 @@ public class SearchView : Gtk.ScrolledWindow
     {
         if (!show.HasValue)
         {
+            _startup.SetVisible(true);
             _noresults.Hide();
             _results.Hide();
             _spinner.Hide();
             return;
         }
             
+        _startup.SetVisible(false);
+        
         if (show.Value)
         {
             _noresults.Hide();
