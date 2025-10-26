@@ -419,11 +419,6 @@ public class PlayerService : IPlayerService, IDisposable
     public void ClearTracks()
     {
         _tracks.Clear();
-
-        if (_playingTrack != null)
-            _tracks.Add(_playingTrack);
-        else if (_selectedTrack != null)
-            _tracks.Add(_selectedTrack);
     }
 
     /// <summary>

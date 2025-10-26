@@ -79,7 +79,6 @@ public partial class MainWindow : Adw.ApplicationWindow
         //Window Settings
         _controller = controller;
         _application = application;
-        SetTitle(_controller.ApplicationInfo.Name);
         SetIconName(_controller.ApplicationInfo.Icon);
         
         //Build UI

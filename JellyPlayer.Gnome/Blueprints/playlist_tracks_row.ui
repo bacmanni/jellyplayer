@@ -15,6 +15,10 @@
                 <property name="margin-end">8</property>
             </object>
         </child>
+        <child type="prefix">
+            <object class="GtkImage" id="_status">
+            </object>
+        </child>
         <child type="suffix">
             <object class="GtkLabel" id="_duration">
             </object>

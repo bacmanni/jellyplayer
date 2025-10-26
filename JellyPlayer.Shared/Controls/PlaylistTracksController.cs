@@ -1,3 +1,4 @@
+using JellyPlayer.Shared.Enums;
 using JellyPlayer.Shared.Events;
 using JellyPlayer.Shared.Models;
 using JellyPlayer.Shared.Services;
@@ -24,6 +25,16 @@ public class PlaylistTracksController
         _configurationService = configurationService;
         _playerService = playerService;
         _fileService = fileService;
+        
+        _playerService.OnPlayerStateChanged += PlayerServiceOnPlayerStateChanged;
+    }
+
+    private void PlayerServiceOnPlayerStateChanged(object? sender, PlayerStateArgs e)
+    {
+        if (e.State is PlayerState.Playing or PlayerState.Stopped || e.State is PlayerState.Paused)
+        {
+            OnPlaylistTracksStateChanged.Invoke(this, new PlaylistTracksStateArgs() {  UpdateTrackState = true, SelectedTrackId = e.SelectedTrack.Id });
+        }
     }
 
     /// <summary>
@@ -47,8 +58,8 @@ public class PlaylistTracksController
     /// <param name="trackId"></param>
     public async Task PlayOrPauseTrack(Guid trackId)
     {
-        if (!_playerService.HasTracks())
-            _playerService.AddTracksFromPlaylist(Tracks);
+        _playerService.ClearTracks();
+        _playerService.AddTracksFromPlaylist(Tracks);
         
         if (_playerService.IsPlaying() && _playerService.IsPlayingTrack(trackId))
         {

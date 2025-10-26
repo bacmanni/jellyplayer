@@ -55,7 +55,6 @@
                         </child>
                         <property name="title-widget">
                           <object class="AdwWindowTitle">
-                            <property name="title" translatable="yes">JellyPlayer</property>
                           </object>
                         </property>
                       </object>
@@ -110,11 +109,11 @@
                         <child type="end">
                           <object class="GtkButton" id="_queue_list_shuffle">
                             <property name="icon-name">media-playlist-shuffle-symbolic</property>
+                            <property name="tooltip-text">Shuffle tracks</property>
                           </object>
                         </child>
                         <property name="title-widget">
                           <object class="AdwWindowTitle">
-                            <property name="title" translatable="yes">Play queue</property>
                           </object>
                         </property>
                       </object>
@@ -139,7 +138,6 @@
                       <object class="AdwHeaderBar">
                         <property name="title-widget">
                           <object class="AdwWindowTitle">
-                            <property name="title" translatable="yes">Album details</property>
                           </object>
                         </property>
                       </object>
@@ -164,7 +162,6 @@
                             <object class="AdwHeaderBar">
                               <property name="title-widget">
                                 <object class="AdwWindowTitle">
-                                  <property name="title" translatable="yes">Playlists</property>
                                 </object>
                               </property>
                             </object>
@@ -189,7 +186,6 @@
                       <object class="AdwHeaderBar">
                         <property name="title-widget">
                           <object class="AdwWindowTitle">
-                            <property name="title" translatable="yes">Playlists</property>
                           </object>
                         </property>
                       </object>

@@ -47,6 +47,12 @@ public class PlaylistTracksView : Gtk.Box
             _spinner.SetVisible(true);
             return;
         }
+
+        if (e.UpdateTrackState)
+        {
+            UpdateTrackState(e.SelectedTrackId.Value);
+            return;
+        }
         
         _playlistTracksList.RemoveAll();
         
@@ -60,6 +66,18 @@ public class PlaylistTracksView : Gtk.Box
         _results.SetVisible(true);
     }
 
+    private void UpdateTrackState(Guid trackId)
+    {
+        for (var i = 0; i < _controller.Tracks.Count; i++)
+        {
+            var row = _playlistTracksList.GetRowAtIndex(i) as PlaylistTracksRow;
+            if (row == null)  continue;
+            
+            var state = _controller.GetPlayerService().GetTrackState(row.TrackId);
+            row.UpdateState(state);
+        }
+    }
+    
     public override void Dispose()
     {
         _controller.OnPlaylistTracksStateChanged -= ControllerOnPlaylistTracksStateChanged;
