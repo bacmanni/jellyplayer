@@ -61,24 +61,24 @@ public class AlbumView : Gtk.ScrolledWindow
 
     private void TracksOnRowActivated(ListBox sender, ListBox.RowActivatedSignalArgs args)
     {
-        if (args.Row is TrackRow row && row.GetTrackId().HasValue)
+        if (args.Row is TrackRow row)
         {
             if (_isCtrlActive)
             {
-                _controller.AddTrackToQueue(row.GetTrackId().Value);
+                _controller.AddTrackToQueue(row.TrackId);
             }
             else
             {
-                _controller.PlayOrPauseTrack(row.GetTrackId().Value);
+                _controller.PlayOrPauseTrack(row.TrackId);
             }
         }
     }
 
     private void TracksOnRowSelected(ListBox sender, ListBox.RowSelectedSignalArgs args)
     {
-        if (args.Row is TrackRow row && row.GetTrackId().HasValue)
+        if (args.Row is TrackRow row)
         {
-            _controller.SelectTrack(row.GetTrackId().Value);
+            _controller.SelectTrack(row.TrackId);
         }
     }
 
@@ -130,7 +130,7 @@ public class AlbumView : Gtk.ScrolledWindow
         foreach (var track in _controller.Tracks)
         {
             var state = _controller.GetPlayerService().GetTrackState(track.Id);
-            var row = new TrackRow(track, state);
+            var row = new TrackRow(_controller.GetFileService(), track, state);
             _tracks.Append(row);
         }
     }
@@ -141,9 +141,8 @@ public class AlbumView : Gtk.ScrolledWindow
         {
             var row = _tracks.GetRowAtIndex(i) as TrackRow;
             if (row == null)  continue;
-
-            var rowTrackId = row.GetTrackId() ?? throw new NullReferenceException();
-            var state = _controller.GetPlayerService().GetTrackState(rowTrackId);
+            
+            var state = _controller.GetPlayerService().GetTrackState(row.TrackId);
             row.UpdateState(state);
         }
     }

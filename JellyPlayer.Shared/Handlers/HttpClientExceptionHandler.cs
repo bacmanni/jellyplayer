@@ -1,3 +1,4 @@
+using System.Net;
 using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Handlers;
@@ -21,8 +22,7 @@ public class HttpClientExceptionHandler : DelegatingHandler
                 Console.WriteLine($"Request failed with status code {response.StatusCode}");
                 throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
             }
-                
-
+            
             return response;
         }
         catch (Exception ex)

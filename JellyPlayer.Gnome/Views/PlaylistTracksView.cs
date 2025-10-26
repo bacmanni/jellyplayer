@@ -33,7 +33,7 @@ public class PlaylistTracksView : Gtk.Box
 
     private void PlaylistTracksListOnRowActivated(ListBox sender, ListBox.RowActivatedSignalArgs args)
     {
-        if (args.Row is PlaylistTracksRow row)
+        if (args.Row is TrackRow row)
         {
             _controller.PlayOrPauseTrack(row.TrackId);
         }
@@ -59,7 +59,7 @@ public class PlaylistTracksView : Gtk.Box
         foreach (var track in _controller.Tracks)
         {
             var state = _controller.GetPlayerService().GetTrackState(track.Id);
-            _playlistTracksList.Append(new PlaylistTracksRow(_controller.GetFileService(), track, state));
+            _playlistTracksList.Append(new TrackRow(_controller.GetFileService(), track, state, true));
         }
         
         _spinner.SetVisible(false);
@@ -70,7 +70,7 @@ public class PlaylistTracksView : Gtk.Box
     {
         for (var i = 0; i < _controller.Tracks.Count; i++)
         {
-            var row = _playlistTracksList.GetRowAtIndex(i) as PlaylistTracksRow;
+            var row = _playlistTracksList.GetRowAtIndex(i) as TrackRow;
             if (row == null)  continue;
             
             var state = _controller.GetPlayerService().GetTrackState(row.TrackId);

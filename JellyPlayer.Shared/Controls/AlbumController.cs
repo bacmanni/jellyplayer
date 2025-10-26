@@ -13,6 +13,7 @@ public class AlbumController : IDisposable
     private readonly IFileService _fileService;
     
     public IPlayerService GetPlayerService() => _playerService;
+    public IFileService GetFileService() => _fileService;
 
     public Album? Album { get; private set; }
     public List<Track> Tracks { get; private set; } = [];

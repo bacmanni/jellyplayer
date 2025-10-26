@@ -38,11 +38,11 @@ public class QueueListView : Gtk.ScrolledWindow
 
     private void QueueListOnRowActivated(ListBox sender, ListBox.RowActivatedSignalArgs args)
     {
-        var row = args.Row as QueueRow;
+        var row = args.Row as TrackRow;
         if (row is null)
             return;
                 
-        _controller.GetPlayerService().StartTrackAsync(row.GetTrackId());
+        _controller.GetPlayerService().StartTrackAsync(row.TrackId);
     }
 
     private void ControllerOnQueueUpdated(object? sender, QueueArgs e)
@@ -51,8 +51,7 @@ public class QueueListView : Gtk.ScrolledWindow
         foreach (var track in _controller.Tracks)
         {
             var state = _controller.GetPlayerService().GetTrackState(track.Id);
-            var row = new QueueRow(track, state);
-            _queueList.Append(new QueueRow(track, state));
+            _queueList.Append(new TrackRow(_controller.GetFileService(), track, state, true));
         }
     }
 
@@ -60,10 +59,10 @@ public class QueueListView : Gtk.ScrolledWindow
     {
         for (var i = 0; i < _controller.Tracks.Count; i++)
         {
-            var row = _queueList.GetRowAtIndex(i) as QueueRow;
+            var row = _queueList.GetRowAtIndex(i) as TrackRow;
             if (row == null)  continue;
 
-            row.UpdateState(row.GetTrackId() == trackId ? state : PlayerState.None);
+            row.UpdateState(row.TrackId == trackId ? state : PlayerState.None);
         }
     }
 
