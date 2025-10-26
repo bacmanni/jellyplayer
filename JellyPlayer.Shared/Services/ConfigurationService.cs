@@ -49,15 +49,16 @@ public class ConfigurationService : IConfigurationService
         if (!string.IsNullOrEmpty(json))
         {
             var configuration = JsonSerializer.Deserialize<Configuration>(json);
-            var properties = typeof(Configuration).GetProperties();
-            foreach (var property in properties)
+
+            if (configuration != null)
             {
-                property.SetValue(_configuration, property.GetValue(configuration));
+                var properties = typeof(Configuration).GetProperties();
+                foreach (var property in properties)
+                {
+                    property.SetValue(_configuration, property.GetValue(configuration));
+                }
             }
         }
-
-        if (string.IsNullOrWhiteSpace(_configuration.DeviceId))
-            _configuration.DeviceId = Guid.NewGuid().ToString();
         
         Loaded?.Invoke(this, EventArgs.Empty);
     }

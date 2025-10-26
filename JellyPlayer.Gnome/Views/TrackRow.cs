@@ -97,4 +97,10 @@ public partial class TrackRow : Adw.ActionRow
         _status.SetFromIconName("media-playback-pause-symbolic");
         SetTitle($"<b>{HtmlEncoder.Default.Encode(_track.Name)}</b>");
     }
+
+    public override void Dispose()
+    {
+        _albumArt.Clear();
+        base.Dispose();
+    }
 }

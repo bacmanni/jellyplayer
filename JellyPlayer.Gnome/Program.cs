@@ -69,7 +69,7 @@ class Program
             _applicationInfo.Name,
             _applicationInfo.Version,
             "JellyPlayer Gnome",
-            $"jellyplayer-{configurationService.Get().DeviceId}");
+            $"jellyplayer-{Guid.NewGuid():N}");
         
         var resourceFile = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/org.bacmanni.jellyplayer.gresource";
         Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(resourceFile));

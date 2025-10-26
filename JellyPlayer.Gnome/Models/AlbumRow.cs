@@ -14,11 +14,6 @@ public partial class AlbumRow
     
     public AlbumRow(Album album) : this()
     {
-        Update(album);
-    }
-
-    public void Update(Album album)
-    {
         Id = album.Id;
         Artist = album.Artist;
         Album = album.Name;

@@ -41,17 +41,16 @@ public class FileService : IFileService
     public async Task<byte[]?> GetFileAsync(FileType type, Guid id)
     {
         var filename = GetFilename(type, id);
-
-        if (type == FileType.AlbumArt && _artWork.ContainsKey(id))
+        
+        if (type == FileType.AlbumArt && _artWork.TryGetValue(id, out var cachedArt))
         {
-            return _artWork[id];
+            return cachedArt;
         }
         
-        if (type == FileType.Playlist && _playlistArtwork.ContainsKey(id))
+        if (type == FileType.Playlist && _playlistArtwork.TryGetValue(id, out var cachedPlaylistArt))
         {
-            return _playlistArtwork[id];
+            return cachedPlaylistArt;
         }
-
         
         if (_configurationService.Get().CacheAlbumArt)
         {
@@ -79,7 +78,7 @@ public class FileService : IFileService
 
         if (_configurationService.Get().CacheAlbumArt)
         {
-            await File.WriteAllBytesAsync(filename, primaryArt);
+            File.WriteAllBytesAsync(filename, primaryArt).ConfigureAwait(false);
         }
 
         if (type == FileType.AlbumArt)
@@ -88,69 +87,5 @@ public class FileService : IFileService
             _playlistArtwork.TryAdd(id, primaryArt);
 
         return primaryArt;
-    }
-
-    /// <summary>
-    /// Check if cache file is found
-    /// </summary>
-    /// <param name="key">Key used</param>
-    /// <returns></returns>
-    public bool HasCacheFileAsync(string key)
-    {
-        var filename = _configurationService.GetConfigurationDirectory() + "cache/" + key +  ".json";
-        return File.Exists(filename);
-    }
-
-    /// <summary>
-    /// Get data from disk cache
-    /// </summary>
-    /// <param name="key">Key used</param>
-    /// <typeparam name="T">Type of data</typeparam>
-    /// <returns></returns>
-    public async Task<T?> GetCacheFileAsync<T>(string key)
-    {
-        var filename = _configurationService.GetConfigurationDirectory() + "cache/" + key +  ".json";
-        if (File.Exists(filename))
-        {
-            try
-            {
-                var json = await File.ReadAllTextAsync(filename);
-                return JsonSerializer.Deserialize<T>(json);
-            }
-            catch (Exception e)
-            {
-                return default;
-            }
-        }
-        
-        return default;
-    }
-    
-    /// <summary>
-    /// Write data to disk cache
-    /// </summary>
-    /// <param name="key">Key used</param>
-    /// <param name="data">Data used</param>
-    /// <typeparam name="T">Type of data</typeparam>
-    /// <returns></returns>
-    public async Task<bool> WriteCacheFileAsync<T>(string key, T data)
-    {
-        try
-        {
-            var filename = _configurationService.GetConfigurationDirectory() + "cache/" + key +  ".json";
-            var json = JsonSerializer.Serialize(data,  options: new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) });
-
-            if (HasCacheFileAsync(key))
-            {
-                File.Delete(filename);
-            }
-            
-            await File.WriteAllTextAsync(filename, json);
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
     }
 }
