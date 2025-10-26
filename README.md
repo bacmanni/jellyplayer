@@ -36,6 +36,7 @@ Last mention to [Jetbrains](https://www.jetbrains.com/) for providing open sourc
 **1.0 Beta (Only source code)**
 - Startup wizard for creating Jellyfin server configuration
 - Basic functionality for playing Jellyfin audio from single album and single collection
+- Basic support for playlist and collections
 
 **1.0 (Release packages)**
 - Flatpack support
@@ -43,7 +44,6 @@ Last mention to [Jetbrains](https://www.jetbrains.com/) for providing open sourc
 
 **1.1**
 - MPRIS support
-- Basic support for playlist and collections
 
 **1.2**
 - User can add/modify/delete collection/playlists
