@@ -33,7 +33,7 @@ public class AlbumListView : Gtk.ScrolledWindow
     public AlbumListView(AlbumListController controller) : this(Blueprint.BuilderFromFile("album_list"))
     {
         _controller = controller;
-        _controller.OnAlbumListChanged += ControllerOnOnAlbumListChanged;
+        _controller.OnAlbumListChanged += async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
 
         var configuration = _controller.GetConfigurationService().Get();
         _albumList.SetShowSeparators(configuration.ShowListSeparator);
@@ -66,13 +66,10 @@ public class AlbumListView : Gtk.ScrolledWindow
         _albumGridFactory.OnUnbind += AlbumGridFactoryOnUnbind;
         _albumGrid.SetFactory(_albumGridFactory);
         _albumGrid.SetModel(selectionModel);
-        _albumGrid.OnActivate += async (sender, args) =>
+        _albumList.OnActivate += (_, args) =>
         {
-            var row = _albumListItems.GetObject(args.Position) as AlbumRow;
-            if (row != null)
-            {
+            if (_albumListItems.GetObject(args.Position) is AlbumRow row)
                 _controller.OpenAlbum(row.Id);
-            }
         };
     }
 
@@ -82,7 +79,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         _albumList.SetShowSeparators(updatedConfiguration.ShowListSeparator);
     }
 
-    private async void ControllerOnOnAlbumListChanged(object? sender, AlbumListStateArgs args)
+    private async Task ControllerOnOnAlbumListChanged(object? sender, AlbumListStateArgs args)
     {
         if (args.Albums is not null)
         {
@@ -103,17 +100,6 @@ public class AlbumListView : Gtk.ScrolledWindow
             _spinner.SetVisible(false);
             _results.SetVisible(true);
         }
-    }
-
-    private uint? FindIndexForAlbumId(Guid albumId)
-    {
-        for (uint index = 0; index < _albumListItems.GetNItems(); index++)
-        {
-            if (_albumListItems.GetObject(index) is AlbumRow row && row.Id == albumId)
-                return index;
-        }
-
-        return null;
     }
 
     private void AlbumGridFactoryOnUnbind(SignalListItemFactory sender, SignalListItemFactory.UnbindSignalArgs args)
@@ -165,7 +151,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         }
 
         if (listItem.Item is AlbumRow item)
-            template.Bind(item);
+            _ = template.Bind(item);
     }
 
     private void AlbumGridFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)
@@ -194,7 +180,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         }
 
         if (listItem.Item is AlbumRow item)
-            template.Bind(item);
+            _ = template.Bind(item);
     }
 
     private void AlbumListFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)
@@ -210,7 +196,9 @@ public class AlbumListView : Gtk.ScrolledWindow
 
     public override void Dispose()
     {
-        _controller.OnAlbumListChanged -= ControllerOnOnAlbumListChanged;
+        _controller.OnAlbumListChanged -= async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
+        _controller.GetConfigurationService().Saved -= OnSaved;
+        _albumListItems?.RunDispose();
         base.Dispose();
     }
 }

@@ -14,6 +14,8 @@ public class AlbumListItem : Gtk.Box
     [Gtk.Connect] private readonly Gtk.Label _album;
     [Gtk.Connect] private readonly Gtk.Label _artist;
     
+    private Gdk.Texture? _texture;
+    
     private AlbumListItem(Gtk.Builder builder) : base(
         new BoxHandle(builder.GetPointer("_root"), false))
     {
@@ -30,20 +32,28 @@ public class AlbumListItem : Gtk.Box
         _album.SetLabel(row.Album);
         _artist.SetLabel(row.Artist);
         
+        _albumArt.Clear();
+        _texture?.RunDispose();
+        _texture?.Dispose();
+        _texture = null;
+        
         if (!row.HasArtwork)
             return;
-            
+
         var albumArt = await _fileService.GetFileAsync(FileType.AlbumArt, row.Id);
         if  (albumArt == null || albumArt.Length == 0)
             return;
         
         using var bytes = GLib.Bytes.New(albumArt);
-        using var texture = Gdk.Texture.NewFromBytes(bytes);
-        _albumArt.SetFromPaintable(texture);
+        _texture = Gdk.Texture.NewFromBytes(bytes);
+        _albumArt.SetFromPaintable(_texture);
     }
 
     public void Clear()
     {
         _albumArt.Clear();
+        _texture?.RunDispose();
+        _texture?.Dispose();
+        _texture = null;
     }
 }

@@ -118,6 +118,8 @@ public class AlbumView : Gtk.ScrolledWindow
     {
         if ( _controller.Artwork != null)
         {
+            _albumArt.Clear();
+            
             using var bytes = GLib.Bytes.New(_controller.Artwork);
             using var texture = Gdk.Texture.NewFromBytes(bytes);
             _albumArt.SetFromPaintable(texture);

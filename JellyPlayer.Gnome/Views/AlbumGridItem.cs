@@ -14,6 +14,8 @@ public class AlbumGridItem : Gtk.Box
     [Gtk.Connect] private readonly Gtk.Label _album;
     [Gtk.Connect] private readonly Gtk.Label _artist;
     
+    private Gdk.Texture? _texture;
+    
     private AlbumGridItem(Gtk.Builder builder) : base(
         new BoxHandle(builder.GetPointer("_root"), false))
     {
@@ -30,6 +32,10 @@ public class AlbumGridItem : Gtk.Box
         _artist.SetLabel(row.Artist);
         _album.SetLabel(row.Album);
         
+        _albumArt.Clear();
+        _texture?.RunDispose();
+        _texture = null;
+        
         if (!row.HasArtwork)
             return;
         
@@ -38,12 +44,14 @@ public class AlbumGridItem : Gtk.Box
             return;
         
         using var bytes = GLib.Bytes.New(albumArt);
-        using var texture = Gdk.Texture.NewFromBytes(bytes);
-        _albumArt.SetFromPaintable(texture);
+        _texture = Gdk.Texture.NewFromBytes(bytes);
+        _albumArt.SetFromPaintable(_texture);
     }
 
     public void Clear()
     {
         _albumArt.Clear();
+        _texture?.RunDispose();
+        _texture = null;
     }
 }

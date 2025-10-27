@@ -30,6 +30,5 @@ public interface IPlayerService
     public void AddTracksFromPlaylist(List<Track> tracks);
     public void ClearTracks();
     void PlayTrack(Track track);
-    void RemoveTrack(Track track);
     public PlayerState GetTrackState(Guid trackId);
 }

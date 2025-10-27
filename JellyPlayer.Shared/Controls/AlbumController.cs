@@ -101,17 +101,6 @@ public class AlbumController : IDisposable
         if (track != null)
             _playerService.AddTrack(track);
     }
-    
-    /// <summary>
-    /// Remove track from queue
-    /// </summary>
-    /// <param name="trackId"></param>
-    public void RemoveTrackFromQueue(Guid trackId)
-    {
-        var track = Tracks.FirstOrDefault(t => t.Id == trackId);
-        if (track != null)
-            _playerService.RemoveTrack(track);
-    }
 
     /// <summary>
     /// Get track position in queue

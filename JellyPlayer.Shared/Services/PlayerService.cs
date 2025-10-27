@@ -127,7 +127,7 @@ public class PlayerService : IPlayerService, IDisposable
             // Still same as selected, so we keep playing
             if (trackId == _playingTrack?.Id)
             {
-                _jellyPlayerApiService.ResumePlaybackAsync(trackId);
+                _ = _jellyPlayerApiService.ResumePlaybackAsync(trackId);
                 _player.Play();
                 return;
             }
@@ -136,7 +136,7 @@ public class PlayerService : IPlayerService, IDisposable
         }
         
         // Start new play session
-        _jellyPlayerApiService.StartPlaybackAsync(trackId);
+        _ = _jellyPlayerApiService.StartPlaybackAsync(trackId);
         _playingTrack = _tracks.FirstOrDefault(t => t.Id == trackId);
 
         // Get stream url and start playing
@@ -145,12 +145,15 @@ public class PlayerService : IPlayerService, IDisposable
         _device.MasterMixer.AddComponent(_player);
         _player.IsLooping = false;
         _player.Play();
-        _player.PlaybackEnded += (sender, args) =>
-        {
-            NextTrack();
-        };
+        _player.PlaybackEnded += async (_, args) => await OnPlaybackEnded(_, args);
+        // (sender, args) => { NextTrack(); };  async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
     }
-    
+
+    private async Task OnPlaybackEnded(object? sender, EventArgs args)
+    {
+        _ = NextTrack();
+    }
+
     private void StopPlaying()
     {
         if (_playingTrack == null)
@@ -160,6 +163,7 @@ public class PlayerService : IPlayerService, IDisposable
         
         if (_player != null)
         {
+            _player.PlaybackEnded -= async (_, args) => await OnPlaybackEnded(_, args);
             _jellyPlayerApiService.StopPlaybackAsync(trackId);
             _player?.Stop();
             _device.MasterMixer.RemoveComponent(_player);
@@ -398,7 +402,7 @@ public class PlayerService : IPlayerService, IDisposable
         if (!IsPlaying())
         {
             SelectTrack(track.Id);
-            StartTrackAsync(track.Id);
+            _ = StartTrackAsync(track.Id);
         }
     }
 
@@ -429,17 +433,8 @@ public class PlayerService : IPlayerService, IDisposable
     {
         if (_tracks.Contains(track))
         {
-            StartTrackAsync(track.Id);
+            _ = StartTrackAsync(track.Id);
         }
-    }
-
-    /// <summary>
-    /// Remove input track from play queue
-    /// </summary>
-    /// <param name="track"></param>
-    public void RemoveTrack(Track track)
-    {
-        
     }
 
     /// <summary>
@@ -533,12 +528,14 @@ public class PlayerService : IPlayerService, IDisposable
     {
         if (_player != null)
         {
+            _player.PlaybackEnded -= async (_, args) => await OnPlaybackEnded(_, args);
             _player.Stop();
             _player.Dispose();
+            _player = null;
         }
-        
-        _engine.Dispose();
+
         _device.Stop();
         _device.Dispose();
+        _engine.Dispose();
     }
 }
