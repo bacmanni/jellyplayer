@@ -13,9 +13,8 @@ public class FileService : IFileService
     private readonly IConfigurationService  _configurationService;
     
     // Used for caching already fetched images
-    private readonly ConcurrentDictionary<Guid, byte[]> _artWork = [];
-    private readonly ConcurrentDictionary<Guid, byte[]> _playlistArtwork = [];
-    
+    private readonly ConcurrentDictionary<string, byte[]> _artWork = [];
+
     public FileService(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService)
     {
         _jellyPlayerApiService = jellyPlayerApiService;
@@ -40,18 +39,14 @@ public class FileService : IFileService
     /// <returns></returns>
     public async Task<byte[]?> GetFileAsync(FileType type, Guid id)
     {
+        var key = $"{type.ToString()}-{id.ToString()}";
         var filename = GetFilename(type, id);
         
-        if (type == FileType.AlbumArt && _artWork.TryGetValue(id, out var cachedArt))
+        if (type == FileType.AlbumArt && _artWork.TryGetValue(key, out var cachedArt))
         {
             return cachedArt;
         }
-        
-        if (type == FileType.Playlist && _playlistArtwork.TryGetValue(id, out var cachedPlaylistArt))
-        {
-            return cachedPlaylistArt;
-        }
-        
+
         if (_configurationService.Get().CacheAlbumArt)
         {
             if (!Directory.Exists(filename))
@@ -63,11 +58,8 @@ public class FileService : IFileService
             {
                 var fileBytes = await File.ReadAllBytesAsync(filename);
                 
-                if (type == FileType.AlbumArt)
-                    _artWork.TryAdd(id, fileBytes);
-                if (type == FileType.Playlist)
-                    _playlistArtwork.TryAdd(id, fileBytes);
-                
+                _artWork.TryAdd(key, fileBytes);
+
                 return fileBytes;
             }
         }
@@ -81,11 +73,7 @@ public class FileService : IFileService
             File.WriteAllBytesAsync(filename, primaryArt).ConfigureAwait(false);
         }
 
-        if (type == FileType.AlbumArt)
-            _artWork.TryAdd(id, primaryArt);
-        if (type == FileType.Playlist)
-            _playlistArtwork.TryAdd(id, primaryArt);
-
+        _artWork.TryAdd(key, primaryArt);
         return primaryArt;
     }
 }
