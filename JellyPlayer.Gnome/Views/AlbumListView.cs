@@ -33,7 +33,7 @@ public class AlbumListView : Gtk.ScrolledWindow
     public AlbumListView(AlbumListController controller) : this(Blueprint.BuilderFromFile("album_list"))
     {
         _controller = controller;
-        _controller.OnAlbumListChanged += async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
+        _controller.OnAlbumListChanged += ControllerOnOnAlbumListChanged;
 
         var configuration = _controller.GetConfigurationService().Get();
         _albumList.SetShowSeparators(configuration.ShowListSeparator);
@@ -79,7 +79,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         _albumList.SetShowSeparators(updatedConfiguration.ShowListSeparator);
     }
 
-    private async Task ControllerOnOnAlbumListChanged(object? sender, AlbumListStateArgs args)
+    private void ControllerOnOnAlbumListChanged(object? sender, AlbumListStateArgs args)
     {
         if (args.Albums is not null)
         {
@@ -196,7 +196,7 @@ public class AlbumListView : Gtk.ScrolledWindow
 
     public override void Dispose()
     {
-        _controller.OnAlbumListChanged -= async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
+        _controller.OnAlbumListChanged -= ControllerOnOnAlbumListChanged;
         _controller.GetConfigurationService().Saved -= OnSaved;
         _albumListItems?.RunDispose();
         base.Dispose();

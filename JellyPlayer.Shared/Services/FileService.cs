@@ -1,9 +1,5 @@
 using System.Collections.Concurrent;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
 using JellyPlayer.Shared.Enums;
-using JellyPlayer.Shared.Models;
 
 namespace JellyPlayer.Shared.Services;
 
@@ -14,7 +10,8 @@ public class FileService : IFileService
     
     // Used for caching already fetched images
     private readonly ConcurrentDictionary<string, byte[]> _artWork = [];
-
+    private readonly SemaphoreSlim _semaphore = new(3);
+    
     public FileService(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService)
     {
         _jellyPlayerApiService = jellyPlayerApiService;
@@ -39,41 +36,46 @@ public class FileService : IFileService
     /// <returns></returns>
     public async Task<byte[]?> GetFileAsync(FileType type, Guid id)
     {
-        var key = $"{type.ToString()}-{id.ToString()}";
-        var filename = GetFilename(type, id);
+        await _semaphore.WaitAsync();
+        try
+        {
+            var key = $"{type.ToString()}-{id.ToString()}";
+            var filename = GetFilename(type, id);
         
-        if (type == FileType.AlbumArt && _artWork.TryGetValue(key, out var cachedArt))
-        {
-            return cachedArt;
-        }
-
-        if (_configurationService.Get().CacheAlbumArt)
-        {
-            if (!Directory.Exists(filename))
+            if (type == FileType.AlbumArt && _artWork.TryGetValue(key, out var cachedArt))
             {
-                (new FileInfo(filename)).Directory.Create();
+                return cachedArt;
             }
 
-            if (File.Exists(filename))
+            if (_configurationService.Get().CacheAlbumArt)
             {
-                var fileBytes = await File.ReadAllBytesAsync(filename);
-                
-                _artWork.TryAdd(key, fileBytes);
+                var dir = Path.GetDirectoryName(filename);
+                if (!Directory.Exists(dir))
+                    Directory.CreateDirectory(dir);
 
-                return fileBytes;
+                if (File.Exists(filename))
+                {
+                    var fileBytes = await File.ReadAllBytesAsync(filename);
+                    _artWork.TryAdd(key, fileBytes);
+                    return fileBytes;
+                }
             }
+
+            var primaryArt = await _jellyPlayerApiService.GetPrimaryArtAsync(id);
+            if (primaryArt == null)
+                return null;
+
+            if (_configurationService.Get().CacheAlbumArt)
+            {
+                await File.WriteAllBytesAsync(filename, primaryArt);
+            }
+
+            _artWork.TryAdd(key, primaryArt);
+            return primaryArt;
         }
-
-        var primaryArt = await _jellyPlayerApiService.GetPrimaryArtAsync(id);
-        if (primaryArt == null)
-            return null;
-
-        if (_configurationService.Get().CacheAlbumArt)
+        finally
         {
-            File.WriteAllBytesAsync(filename, primaryArt).ConfigureAwait(false);
+            _semaphore.Release();
         }
-
-        _artWork.TryAdd(key, primaryArt);
-        return primaryArt;
     }
 }
