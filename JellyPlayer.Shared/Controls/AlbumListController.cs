@@ -4,7 +4,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class AlbumListController : IDisposable
+public sealed class AlbumListController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -82,7 +82,7 @@ public class AlbumListController : IDisposable
         OnAlbumClicked.Invoke(this, albumId);
     }
 
-    private protected virtual void AlbumListChanged(AlbumListStateArgs e)
+    private void AlbumListChanged(AlbumListStateArgs e)
     {
         OnAlbumListChanged?.Invoke(this, e);
     }

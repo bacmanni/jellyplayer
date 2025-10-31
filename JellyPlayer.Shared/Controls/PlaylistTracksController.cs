@@ -5,7 +5,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class PlaylistTracksController
+public sealed class PlaylistTracksController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -69,5 +69,10 @@ public class PlaylistTracksController
         {
             await _playerService.StartTrackAsync(trackId);
         }
+    }
+
+    public void Dispose()
+    {
+        _playerService.OnPlayerStateChanged -= PlayerServiceOnPlayerStateChanged;
     }
 }

@@ -4,7 +4,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class PlayerController : IDisposable
+public sealed class PlayerController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;

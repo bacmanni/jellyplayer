@@ -14,6 +14,7 @@ public class AlbumListItem : Gtk.Box
     [Gtk.Connect] private readonly Gtk.Label _album;
     [Gtk.Connect] private readonly Gtk.Label _artist;
     
+    private CancellationTokenSource? _cancellationTokenSource;
     private Gdk.Texture? _texture;
     
     private AlbumListItem(Gtk.Builder builder) : base(
@@ -27,8 +28,11 @@ public class AlbumListItem : Gtk.Box
         _fileService = fileService;
     }
 
-    public async Task Bind(AlbumRow row)
+    public void Bind(AlbumRow row)
     {
+        _cancellationTokenSource?.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
+        
         _album.SetLabel(row.Album);
         _artist.SetLabel(row.Artist);
         
@@ -40,20 +44,44 @@ public class AlbumListItem : Gtk.Box
         if (!row.HasArtwork)
             return;
 
-        var albumArt = await _fileService.GetFileAsync(FileType.AlbumArt, row.Id);
+        _ = UpdateImage(row.Id);
+    }
+
+    private async Task UpdateImage(Guid id)
+    {
+        if (_cancellationTokenSource is { IsCancellationRequested: true })
+        {
+            return;
+        }
+        
+        var albumArt = await _fileService.GetFileAsync(FileType.AlbumArt, id);
         if  (albumArt == null || albumArt.Length == 0)
             return;
         
         using var bytes = GLib.Bytes.New(albumArt);
         _texture = Gdk.Texture.NewFromBytes(bytes);
+
+        
+        if (_cancellationTokenSource is { IsCancellationRequested: true })
+        {
+            _texture.Dispose();
+            return;
+        }
+
         _albumArt.SetFromPaintable(_texture);
     }
-
+    
     public void Clear()
     {
+        _cancellationTokenSource?.Cancel();
         _albumArt.Clear();
-        _texture?.RunDispose();
         _texture?.Dispose();
         _texture = null;
+    }
+
+    public override void Dispose()
+    {
+        Clear();
+        base.Dispose();
     }
 }

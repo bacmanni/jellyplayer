@@ -13,7 +13,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace JellyPlayer.Shared.Services;
 
-public class PlayerService : IPlayerService, IDisposable
+public sealed class PlayerService : IPlayerService, IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly Configuration _configuration;
@@ -109,7 +109,7 @@ public class PlayerService : IPlayerService, IDisposable
         }
     }
     
-    private protected virtual void PlayerStateChanged(PlayerStateArgs e)
+    private void PlayerStateChanged(PlayerStateArgs e)
     {
         OnPlayerStateChanged?.Invoke(this, e);
     }
@@ -149,9 +149,10 @@ public class PlayerService : IPlayerService, IDisposable
         // (sender, args) => { NextTrack(); };  async (_, args) => await ControllerOnOnAlbumListChanged(_, args);
     }
 
-    private async Task OnPlaybackEnded(object? sender, EventArgs args)
+    private Task OnPlaybackEnded(object? sender, EventArgs args)
     {
         _ = NextTrack();
+        return Task.CompletedTask;
     }
 
     private void StopPlaying()

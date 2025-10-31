@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO.Abstractions;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Reflection;
@@ -136,6 +137,7 @@ class Program
         serviceCollection.AddScoped<JellyfinApiClient>();
 
         // Project related
+        serviceCollection.AddSingleton<IFileSystem, FileSystem>();
         serviceCollection.AddSingleton<IJellyPlayerApiService, JellyPlayerApiService>();
         serviceCollection.AddSingleton<IPlayerService, PlayerService>();
         serviceCollection.AddSingleton<IFileService, FileService>();

@@ -4,7 +4,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class SearchController : IDisposable
+public sealed class SearchController : IDisposable
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService _configurationService;
@@ -12,8 +12,10 @@ public class SearchController : IDisposable
     private readonly IFileService  _fileService;
     
     public readonly List<Models.Search> Results = [];
+    private CancellationTokenSource? _cancellationTokenSource;
+    
     public IFileService GetFileService() => _fileService;
-    public event EventHandler<AlbumArgs> OnAlbumClicked;
+    public event EventHandler<AlbumArgs>? OnAlbumClicked;
     public event EventHandler<SearchStateArgs>? OnSearchStateChanged;
     
     public SearchController(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService, IPlayerService playerService, IFileService fileService)
@@ -38,10 +40,10 @@ public class SearchController : IDisposable
     /// <param name="albumId"></param>
     public void OpenAlbum(Guid albumId, Guid? trackId)
     {
-        OnAlbumClicked.Invoke(this, new AlbumArgs() { AlbumId = albumId, TrackId = trackId });
+        OnAlbumClicked?.Invoke(this, new AlbumArgs() { AlbumId = albumId, TrackId = trackId });
     }
     
-    private protected virtual void SearchStateChanged(SearchStateArgs e)
+    private void SearchStateChanged(SearchStateArgs e)
     {
         OnSearchStateChanged?.Invoke(this, e);
     }
@@ -55,11 +57,33 @@ public class SearchController : IDisposable
         SearchStateChanged(new SearchStateArgs() { Start = true });
         Results.Clear();
         
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource = new CancellationTokenSource();
+        
+        await GetSearchResults(value, _cancellationTokenSource.Token);
+        
+        SearchStateChanged(new SearchStateArgs() { Updated = true });
+    }
+
+    private async Task GetSearchResults(string value, CancellationToken token)
+    {
+        await Task.Delay(500, token);
+
+        if (token.IsCancellationRequested)
+        {
+            return;
+        }
+        
         var results = await Task.WhenAll([
             _jellyPlayerApiService.SearchAlbum(value),
             _jellyPlayerApiService.SearchArtistAlbums(value),
             _jellyPlayerApiService.SearchTrack(value),
         ]);
+        
+        if (token.IsCancellationRequested)
+        {
+            return;
+        }
         
         var sortList = new List<Search>();
         foreach (var result in results)
@@ -70,8 +94,6 @@ public class SearchController : IDisposable
         // Removes duplicates and sorts
         var sorted = sortList.GroupBy(x => x.Id).Select(x => x.First()).OrderBy(s => s.Type);
         Results.AddRange(sorted);
-        
-        SearchStateChanged(new SearchStateArgs() { Updated = true });
     }
 
     public void Dispose()

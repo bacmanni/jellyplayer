@@ -1,3 +1,4 @@
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -6,8 +7,9 @@ using JellyPlayer.Shared.Models;
 
 namespace JellyPlayer.Shared.Services;
 
-public class ConfigurationService : IConfigurationService
+public class ConfigurationService(IFileSystem fileSystem) : IConfigurationService
 {
+    private readonly IFileSystem _fileSystem = fileSystem;
     private readonly Configuration _configuration = new();
     
     /// <summary>
@@ -19,7 +21,7 @@ public class ConfigurationService : IConfigurationService
     /// Occurs when the configuration object is loaded
     /// </summary>
     public event EventHandler<EventArgs>? Loaded;
-    
+
     /// <summary>
     /// Saves the configuration file
     /// </summary>
@@ -27,8 +29,8 @@ public class ConfigurationService : IConfigurationService
     {
         var filename = GetFilename();
         var json = JsonSerializer.Serialize(_configuration,  options: new JsonSerializerOptions { WriteIndented = true, Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) });
-        File.WriteAllText(filename, json);
         
+        _fileSystem.File.WriteAllText(filename, json);
         Saved?.Invoke(this, EventArgs.Empty);
     }
 
@@ -44,7 +46,7 @@ public class ConfigurationService : IConfigurationService
             CreateConfigurationFile(filename);
         }
         
-        var json = File.ReadAllText(filename);
+        var json = _fileSystem.File.ReadAllText(filename);
         
         if (!string.IsNullOrEmpty(json))
         {
@@ -104,15 +106,18 @@ public class ConfigurationService : IConfigurationService
     {
         try
         {
-            if (!Directory.Exists(filename))
+            
+            
+            
+            if (!_fileSystem.Directory.Exists(filename))
             {
-                (new FileInfo(filename)).Directory.Create();
+                _fileSystem.Directory.CreateDirectory(filename);
             }
             
-            if (!File.Exists(filename))
+            
+            if (!_fileSystem.File.Exists(filename))
             {
-                var file = new FileInfo(filename);
-                file.Directory.Create();
+                _fileSystem.File.CreateText(filename).Close();
                 Save();
             }
         }

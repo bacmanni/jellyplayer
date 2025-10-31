@@ -180,7 +180,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         }
 
         if (listItem.Item is AlbumRow item)
-            _ = template.Bind(item);
+            template.Bind(item);
     }
 
     private void AlbumListFactoryOnSetup(Gtk.SignalListItemFactory sender, Gtk.SignalListItemFactory.SetupSignalArgs args)

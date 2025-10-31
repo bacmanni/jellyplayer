@@ -3,7 +3,7 @@ using JellyPlayer.Shared.Services;
 
 namespace JellyPlayer.Shared.Controls;
 
-public class LyricsController
+public sealed class LyricsController
 {
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IPlayerService _playerService;
