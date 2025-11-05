@@ -1,10 +1,12 @@
 using System.Collections.Concurrent;
+using System.IO.Abstractions;
 using JellyPlayer.Shared.Enums;
 
 namespace JellyPlayer.Shared.Services;
 
 public class FileService : IFileService
 {
+    private readonly IFileSystem _fileSystem;
     private readonly IJellyPlayerApiService _jellyPlayerApiService;
     private readonly IConfigurationService  _configurationService;
     
@@ -12,18 +14,19 @@ public class FileService : IFileService
     private readonly ConcurrentDictionary<string, byte[]> _artWork = [];
     private readonly SemaphoreSlim _semaphore = new(3);
     
-    public FileService(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService)
+    public FileService(IJellyPlayerApiService jellyPlayerApiService, IConfigurationService configurationService, IFileSystem fileSystem)
     {
         _jellyPlayerApiService = jellyPlayerApiService;
         _configurationService = configurationService;
+        _fileSystem = fileSystem;
     }
 
     private string GetFilename(FileType type, Guid id)
     {
         if (type == FileType.AlbumArt)
-            return $"{_configurationService.GetConfigurationDirectory()}cache/albums/{id.ToString()}.jpg";
+            return $"{_configurationService.GetCacheDirectory()}/albums/{id.ToString()}.jpg";
         if (type == FileType.Playlist)
-            return $"{_configurationService.GetConfigurationDirectory()}cache/playlists/{id.ToString()}.jpg";
+            return $"{_configurationService.GetCacheDirectory()}/playlists/{id.ToString()}.jpg";
         
         throw new NotImplementedException($"File type {type} not implemented");
     }
@@ -49,13 +52,13 @@ public class FileService : IFileService
 
             if (_configurationService.Get().CacheAlbumArt)
             {
-                var dir = Path.GetDirectoryName(filename);
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
+                var dir = _fileSystem.Path.GetDirectoryName(filename);
+                if (!_fileSystem.Directory.Exists(dir))
+                    _fileSystem.Directory.CreateDirectory(dir);
 
-                if (File.Exists(filename))
+                if (_fileSystem.File.Exists(filename))
                 {
-                    var fileBytes = await File.ReadAllBytesAsync(filename);
+                    var fileBytes = await _fileSystem.File.ReadAllBytesAsync(filename);
                     _artWork.TryAdd(key, fileBytes);
                     return fileBytes;
                 }
@@ -67,7 +70,7 @@ public class FileService : IFileService
 
             if (_configurationService.Get().CacheAlbumArt)
             {
-                await File.WriteAllBytesAsync(filename, primaryArt);
+                await _fileSystem.File.WriteAllBytesAsync(filename, primaryArt);
             }
 
             _artWork.TryAdd(key, primaryArt);

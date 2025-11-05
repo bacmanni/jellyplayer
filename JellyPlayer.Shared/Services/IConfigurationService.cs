@@ -9,6 +9,7 @@ public interface IConfigurationService
     public void Save();
     public void Load();
     public string GetConfigurationDirectory();
+    public string GetCacheDirectory();
     Configuration Get();
     void Set(Configuration configuration);
 }

@@ -58,6 +58,7 @@ public sealed class SearchController : IDisposable
         Results.Clear();
         
         _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
         _cancellationTokenSource = new CancellationTokenSource();
         
         await GetSearchResults(value, _cancellationTokenSource.Token);

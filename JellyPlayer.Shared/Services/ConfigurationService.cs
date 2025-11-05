@@ -11,6 +11,8 @@ public class ConfigurationService(IFileSystem fileSystem) : IConfigurationServic
 {
     private readonly IFileSystem _fileSystem = fileSystem;
     private readonly Configuration _configuration = new();
+
+    private readonly string _appId = "org.bacmanni.JellyPlayer";
     
     /// <summary>
     /// Occurs when the configuration object is saved
@@ -40,7 +42,7 @@ public class ConfigurationService(IFileSystem fileSystem) : IConfigurationServic
     public void Load()
     {
         var filename = GetFilename();
-
+        CreateConfigurationFile(filename);
         if (!File.Exists(filename))
         {
             CreateConfigurationFile(filename);
@@ -65,21 +67,58 @@ public class ConfigurationService(IFileSystem fileSystem) : IConfigurationServic
         Loaded?.Invoke(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Get application configuration file directory
+    /// </summary>
+    /// <returns></returns>
     public string GetConfigurationDirectory()
     {
         var platform = GetOsPlatform();
         if (platform == OSPlatform.Linux)
         {
-            return $"/home/{Environment.UserName}/.jellyplayer/";
+            var configHome = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME");
+            if (string.IsNullOrEmpty(configHome))
+            {
+                var home = Environment.GetEnvironmentVariable("HOME");
+                configHome = Path.Combine(home, ".config", _appId);
+            }
+
+            return configHome;
         }
         else if (platform == OSPlatform.OSX)
         {
-            return $"/Users/{Environment.UserName}/.jellyplayer/";
+            return $"/Users/{Environment.UserName}/.jellyplayer";
         }
         
         throw new PlatformNotSupportedException();
     }
 
+    /// <summary>
+    /// Get application cache directory
+    /// </summary>
+    /// <returns></returns>
+    public string GetCacheDirectory()
+    {
+        var platform = GetOsPlatform();
+        if (platform == OSPlatform.Linux)
+        {
+            var configHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
+            if (string.IsNullOrEmpty(configHome))
+            {
+                var home = Environment.GetEnvironmentVariable("HOME");
+                configHome = Path.Combine(home, ".cache", _appId);
+            }
+
+            return configHome;
+        }
+        else if (platform == OSPlatform.OSX)
+        {
+            return $"/Users/{Environment.UserName}/.jellyplayer";
+        }
+        
+        throw new PlatformNotSupportedException();
+    }
+    
     /// <summary>
     /// Get stored configuration
     /// </summary>
@@ -106,15 +145,10 @@ public class ConfigurationService(IFileSystem fileSystem) : IConfigurationServic
     {
         try
         {
-            
-            
-            
-            if (!_fileSystem.Directory.Exists(filename))
-            {
-                _fileSystem.Directory.CreateDirectory(filename);
-            }
-            
-            
+            var dir = _fileSystem.Path.GetDirectoryName(filename);
+            if (!_fileSystem.Directory.Exists(dir))
+                _fileSystem.Directory.CreateDirectory(dir);
+
             if (!_fileSystem.File.Exists(filename))
             {
                 _fileSystem.File.CreateText(filename).Close();
@@ -132,15 +166,15 @@ public class ConfigurationService(IFileSystem fileSystem) : IConfigurationServic
         var platform = GetOsPlatform();
         if (platform == OSPlatform.Linux)
         {
-            return $"{GetConfigurationDirectory()}configuration.json";
+            return $"{GetConfigurationDirectory()}/configuration.json";
         }
         else if (platform == OSPlatform.OSX)
         {
-            return $"{GetConfigurationDirectory()}configuration.json";
+            return $"{GetConfigurationDirectory()}/configuration.json";
         }
         else if (platform == OSPlatform.Windows)
         {
-            return $"{GetConfigurationDirectory()}configuration.json";
+            return $"{GetConfigurationDirectory()}/configuration.json";
         }
         
         throw new PlatformNotSupportedException();
