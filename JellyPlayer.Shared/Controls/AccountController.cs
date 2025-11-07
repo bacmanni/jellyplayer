@@ -1,4 +1,5 @@
 using JellyPlayer.Shared.Enums;
+using JellyPlayer.Shared.Events;
 using JellyPlayer.Shared.Models;
 using JellyPlayer.Shared.Services;
 
@@ -18,7 +19,7 @@ public sealed class AccountController
     public Guid? CollectionId { get; set; }
     public Guid? PlaylistCollectionId { get; set; }
 
-    public event EventHandler<Configuration> OnConfigurationLoaded;
+    public event EventHandler<AccountArgs> OnConfigurationLoaded;
 
     public event EventHandler<bool> OnUpdate;
     
@@ -85,7 +86,8 @@ public sealed class AccountController
     /// Open input configuration
     /// </summary>
     /// <param name="configuration"></param>
-    public void OpenConfiguration(Configuration configuration)
+    /// <param name="validate">Should validate when opened</param>
+    public void OpenConfiguration(Configuration configuration, bool validate)
     {
         _isValid = true;
         ServerUrl = configuration.ServerUrl;
@@ -99,7 +101,7 @@ public sealed class AccountController
         if (configuration.PlaylistCollectionId != null)
             PlaylistCollectionId = Guid.Parse(configuration.PlaylistCollectionId);
         
-        OnConfigurationLoaded?.Invoke(this, configuration);
+        OnConfigurationLoaded?.Invoke(this, new AccountArgs() {Validate = validate, Configuration = configuration });
     }
 
     /// <summary>

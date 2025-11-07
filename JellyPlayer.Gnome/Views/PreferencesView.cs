@@ -85,7 +85,7 @@ public partial class PreferencesView : Adw.PreferencesDialog
         _preferencesPage1.Add(_accountView);
         
         var configuration =  _configurationService.Get();
-        _accountController.OpenConfiguration(configuration);
+        _accountController.OpenConfiguration(configuration, true);
         _useLocalMemory.SetActive(configuration.CacheAlbumArt);
         _showListSeparator.SetActive(configuration.ShowListSeparator);
     }

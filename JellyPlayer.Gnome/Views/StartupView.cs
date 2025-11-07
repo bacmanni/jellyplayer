@@ -27,14 +27,15 @@ public class StartupView : Adw.Dialog
         builder.Connect(this);
     }
 
-    public StartupView(StartupController controller, TaskCompletionSource taskCompletionSource) : this(Blueprint.BuilderFromFile("startup"))
+    public StartupView(StartupState startupState, StartupController controller,
+        TaskCompletionSource taskCompletionSource) : this(Blueprint.BuilderFromFile("startup"))
     {
         _controller = controller;
         _taskCompletionSource = taskCompletionSource;
         
         _accountController = new AccountController(_controller.GetConfigurationService(), _controller.GetJellyPlayerApiService());
         _accountView = new AccountView(_accountController);
-        _accountController.OpenConfiguration(_controller.GetConfigurationService().Get());
+        _accountController.OpenConfiguration(_controller.GetConfigurationService().Get(), startupState != StartupState.InitialRun);
         _accountBox.Prepend(_accountView);
         _accountController.OnUpdate += (sender, b) =>
         {

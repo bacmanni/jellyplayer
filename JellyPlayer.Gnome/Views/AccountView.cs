@@ -4,6 +4,7 @@ using JellyPlayer.Gnome.Helpers;
 using JellyPlayer.Gnome.Models;
 using JellyPlayer.Shared.Controls;
 using JellyPlayer.Shared.Enums;
+using JellyPlayer.Shared.Events;
 using JellyPlayer.Shared.Models;
 using SwitchRow = Adw.SwitchRow;
 
@@ -127,16 +128,19 @@ public class AccountView : Adw.PreferencesGroup
             template.SetText(item.Name);
     }
 
-    private async void ControllerOnOnConfigurationLoaded(object? sender, Configuration configuration)
+    private async void ControllerOnOnConfigurationLoaded(object? sender, AccountArgs args)
     {
         _isAccountValid = false;
         _isServerValid = false;
             
-        _server.SetText(configuration.ServerUrl);
-        _username.SetText(configuration.Username);
-        _password.SetText(configuration.Password);
-        _rememberPassword.SetActive(configuration.RememberPassword);
+        _server.SetText(args.Configuration.ServerUrl);
+        _username.SetText(args.Configuration.Username);
+        _password.SetText(args.Configuration.Password);
+        _rememberPassword.SetActive(args.Configuration.RememberPassword);
 
+        if (!args.Validate)
+            return;
+        
         await CheckServer();
         await CheckLogin();
             

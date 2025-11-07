@@ -66,7 +66,7 @@ public class AlbumListView : Gtk.ScrolledWindow
         _albumGridFactory.OnUnbind += AlbumGridFactoryOnUnbind;
         _albumGrid.SetFactory(_albumGridFactory);
         _albumGrid.SetModel(selectionModel);
-        _albumList.OnActivate += (_, args) =>
+        _albumGrid.OnActivate += (_, args) =>
         {
             if (_albumListItems.GetObject(args.Position) is AlbumRow row)
                 _controller.OpenAlbum(row.Id);

@@ -5,6 +5,7 @@
         <child>
             <object class="AdwEntryRow" id="_server">
                 <property name="title" translatable="yes">Server</property>
+                <property name="input-purpose">5</property>
                 <property name="show-apply-button">true</property>
             </object>
         </child>
