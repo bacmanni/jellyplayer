@@ -92,7 +92,9 @@ public sealed class AccountController
         Username = configuration.Username;
         Password = configuration.Password;
         RememberPassword = configuration.RememberPassword;
-        CollectionId = Guid.Parse(configuration.CollectionId);
+        
+        if (!string.IsNullOrWhiteSpace(configuration.CollectionId))
+            CollectionId = Guid.Parse(configuration.CollectionId);
         
         if (configuration.PlaylistCollectionId != null)
             PlaylistCollectionId = Guid.Parse(configuration.PlaylistCollectionId);
