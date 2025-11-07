@@ -60,7 +60,6 @@
       <None Remove="Blueprints\queue_list_item.ui" />
       <None Remove="Blueprints\wizard.ui" />
       <None Remove="Blueprints\queue_row.ui" />
-      <EmbeddedResource Include="Blueprints\queue_row.ui" />
       <None Remove="Blueprints\startup.ui" />
       <EmbeddedResource Include="Blueprints\startup.ui" />
       <None Remove="Blueprints\search_row.ui" />
@@ -79,7 +78,6 @@
       <None Remove="Blueprints\playlist_tracks.ui" />
       <EmbeddedResource Include="Blueprints\playlist_tracks.ui" />
       <None Remove="Blueprints\playlist_tracks_row.ui" />
-      <EmbeddedResource Include="Blueprints\playlist_tracks_row.ui" />
     </ItemGroup>
 
     <ItemGroup>

@@ -14,8 +14,7 @@
                     <class name="icon-dropshadow"/>
                     <class name="album-art-small"/>
                 </style>
-                <property name="width-request">40</property>
-                <property name="height-request">40</property>
+                <property name="pixel-size">40</property>
             </object>
         </child>
         <child type="prefix">
