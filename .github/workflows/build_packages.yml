@@ -17,7 +17,7 @@ jobs:
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '9.0.10'
+        dotnet-version: '9.0'
 
     - name: Install PupNet
       run: dotnet tool update -g KuiperZone.PupNet
